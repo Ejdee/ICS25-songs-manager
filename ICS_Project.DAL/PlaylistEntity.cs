@@ -11,7 +11,6 @@ public class PlaylistEntity : IEntity
     public int NumberOfSongs { get; set; }
 
 
-    //VRATIT A A POCHOPIT
     // Kolekcia skladieb, ktoré sú priradené k tomuto playlistu
     public ICollection<PlaylistMusicFileEntity> MusicFileEntities { get; init; } = new List<PlaylistMusicFileEntity>();
     //METODY:
