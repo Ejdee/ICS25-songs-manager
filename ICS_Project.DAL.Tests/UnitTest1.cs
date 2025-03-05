@@ -17,24 +17,24 @@ public class UnitTest1
     [Fact]
     public void Test1()
     {
-        var author = new Artist(
+        var author = new ArtistEntity(
             name: "John Doe",
             description: "John Doe",
             country: "USA"
         );
-        var album = new Album(
-            name: "Test Album",
-            description: "Test Album",
+        var album = new AlbumEntity(
+            name: "Test AlbumEntity",
+            description: "Test AlbumEntity",
             releaseYear: 2004,
-            artist: author
+            artistEntity: author
         );
-        var song = new Song(
-            name: "Test Song",
-            description: "Test Song Description",
-            genre: "Test Song Genre",
+        var song = new SongEntity(
+            name: "Test SongEntity",
+            description: "Test SongEntity Description",
+            genre: "Test SongEntity Genre",
             durationInSeconds: 10,
-            artist: author,
-            album: album,
+            artistEntity: author,
+            albumEntity: album,
             songUrl: "testurl"
         );
         
