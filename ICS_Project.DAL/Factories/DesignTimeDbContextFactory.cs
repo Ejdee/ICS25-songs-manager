@@ -7,7 +7,7 @@ namespace ICS_Project.DAL.Factories;
 /// </summary>
 public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<IcsDbContext>
 {
-    private readonly DbContextSqLiteFactory _dbContextSqLiteFactory = new("cookbook.db");
+    private readonly DbContextSqLiteFactory _dbContextSqLiteFactory = new("playlist-manager.db");
 
     public IcsDbContext CreateDbContext(string[] args) => _dbContextSqLiteFactory.CreateDbContext();
 }
