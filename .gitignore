@@ -1,6 +1,6 @@
 ﻿# Visual Studio build
-bin/
-obj/
+.bin/
+.obj/
 .vs/
 *.user
 *.suo
