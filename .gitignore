@@ -19,3 +19,7 @@ project-manager.db
 *.exe
 *.db
 *.bak
+
+# Ignore .NET build output folders
+[Oo]bj/
+[Bb]in/
