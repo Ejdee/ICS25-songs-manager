@@ -1,0 +1,22 @@
+# Visual Studio build
+**/bin/
+**/obj/
+.vs/
+*.user
+*.suo
+*.cache
+*.log
+*.pdb
+
+project-manager.db
+
+# Rider / JetBrains
+.idea/
+.vsconfig
+
+# Dotnet specific
+*.dll
+*.exe
+*.db
+*.bak
+
