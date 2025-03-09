@@ -1,3 +1,4 @@
+using ICS_Project.DAL.Entities;
 using Xunit;
 
 namespace ICS_Project.DAL.Tests;
@@ -77,5 +78,43 @@ public class SongTests : IntegrationTestBase
         // Assert
         var deletedSong = IcsDbContextSut.Songs.FirstOrDefault(s => s.Id == song.Id);
         Assert.Null(deletedSong);
+    }
+
+    [Fact]
+    public void SongInMorePlaylistTest()
+    {
+        // Arrange
+        var song = new SongEntity(
+            name: "Test SongEntity",
+            description: "Test SongEntity Description",
+            genre: "Test SongEntity Genre",
+            durationInSeconds: 10,
+            artist: "John Doe",
+            songUrl: "testurl"
+        );
+
+        var playlist1 = new PlaylistEntity { Name = "Playlist1" };
+        var playlist2 = new PlaylistEntity { Name = "Playlist2" };
+
+        // Act
+        IcsDbContextSut.Songs.Add(song);
+        IcsDbContextSut.Playlists.Add(playlist1);
+        IcsDbContextSut.Playlists.Add(playlist2);
+        IcsDbContextSut.SaveChanges();
+        
+        var playlist1Db = IcsDbContextSut.Playlists.FirstOrDefault(p => p.Id == playlist1.Id);
+        var playlist2Db = IcsDbContextSut.Playlists.FirstOrDefault(p => p.Id == playlist2.Id);
+        
+        playlist1Db?.AddSongItem(song);
+        playlist2Db?.AddSongItem(song);
+        
+        IcsDbContextSut.SaveChanges();
+        
+        var songInPlaylist1 = IcsDbContextSut.Songs.FirstOrDefault(s => s.Id == song.Id);
+        var songInPlaylist2 = IcsDbContextSut.Songs.FirstOrDefault(s => s.Id == song.Id);
+
+        // Assert
+        Assert.NotNull(songInPlaylist1);
+        Assert.NotNull(songInPlaylist2);
     }
 }

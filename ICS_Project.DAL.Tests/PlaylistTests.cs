@@ -1,3 +1,4 @@
+using ICS_Project.DAL.Entities;
 using Xunit;
 
 namespace ICS_Project.DAL.Tests;
@@ -98,5 +99,40 @@ public class PlaylistTests : IntegrationTestBase
             song => Assert.Equal(song1.Id, song.Id),
             song => Assert.Equal(song2.Id, song.Id)
         );
+    }
+
+    [Fact]
+    public void RemoveSongFromPlaylistTest()
+    {
+        var playlist = new PlaylistEntity { Name = "Test Playlist" };
+        var song1 = new SongEntity(
+            name: "First SongEntity",
+            description: "Test SongEntity Description",
+            genre: "Test SongEntity Genre",
+            durationInSeconds: 10,
+            artist: "John Doe",
+            songUrl: "testurl"
+        );
+        // Act
+        IcsDbContextSut.Playlists.Add(playlist);
+        IcsDbContextSut.Songs.Add(song1);
+        IcsDbContextSut.SaveChanges();
+        
+        var playlistDb = IcsDbContextSut.Playlists.FirstOrDefault(p => p.Id == playlist.Id);
+        var s1 = IcsDbContextSut.Songs.FirstOrDefault(s => s.Id == song1.Id);
+        
+        // Assert  
+        Assert.NotNull(s1); 
+        Assert.NotNull(playlistDb);
+        
+        playlistDb.AddSongItem(s1);
+        IcsDbContextSut.SaveChanges();
+
+        Assert.Single(playlist.Songs);
+        
+        playlistDb.RemoveSongItem(s1);
+        IcsDbContextSut.SaveChanges();
+        
+        Assert.Empty(playlistDb.Songs);
     }
 }
