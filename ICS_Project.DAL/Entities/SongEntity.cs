@@ -1,6 +1,6 @@
 ﻿using ICS_Project.DAL.Interfaces;
 
-namespace ICS_Project.DAL;
+namespace ICS_Project.DAL.Entities;
 
 public record SongEntity: IEntity
 {
@@ -8,7 +8,6 @@ public record SongEntity: IEntity
     public string Name { get; set; }
     public string Description { get; init; }
     public string Genre { get; private set; }
-    public float Size { get; private set; } //TODO: Is size necessary? Will we be using whole files or links??
     public int DurationInSeconds { get; private set; }
     public string Artist { get; init; }
     public string SongUrl { get; private set; }

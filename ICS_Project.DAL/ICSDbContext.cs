@@ -1,3 +1,4 @@
+using ICS_Project.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace ICS_Project.DAL;
