@@ -23,12 +23,6 @@ public record PlaylistEntity
     {
         _songs.Remove(songEntity);
     }
-
+    
     // public List<SongEntity> GetAllSongs() => _songs;
-
-    public List<SongEntity> GetSongsByArtist(string artistName) =>
-        _songs.Where(s => s.ArtistEntity.Name == artistName).ToList();
-
-    public List<SongEntity> GetSongsByAlbum(string albumTitle) =>
-        _songs.Where(s => s.AlbumEntity.Name == albumTitle).ToList();
 }
