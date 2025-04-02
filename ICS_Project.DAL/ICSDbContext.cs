@@ -3,8 +3,25 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ICS_Project.DAL;
 
-public class IcsDbContext(DbContextOptions options): DbContext(options) 
+public class IcsDbContext(DbContextOptions options): DbContext(options)
 {
-    public DbSet<SongEntity> Songs { get; set; }
-    public DbSet<PlaylistEntity> Playlists { get; set; }
+    public DbSet<PlaylistSongEntity> PlaylistSongs => Set<PlaylistSongEntity>();
+    public DbSet<SongEntity> Songs => Set<SongEntity>();
+    public DbSet<PlaylistEntity> Playlists => Set<PlaylistEntity>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<PlaylistEntity>()
+            .HasMany(s => s.PlaylistSongs)
+            .WithOne(p => p.Playlist)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<SongEntity>()
+            .HasMany<PlaylistSongEntity>()
+            .WithOne(s => s.Song)
+            .OnDelete(DeleteBehavior.Restrict);
+
+    }
 }
