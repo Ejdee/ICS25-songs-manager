@@ -1,138 +1,205 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using ICS_Project.DAL.Entities;
+using ICS_Project.Common.Tests;
+using ICS_Project.Common.Tests.Seeds;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace ICS_Project.DAL.Tests;
 
 [Collection("Sequential")]
-public class PlaylistTests : IntegrationTestBase
+public class PlaylistTests(ITestOutputHelper output) : IntegrationTestBase(output)
 {
     [Fact]
-    public void AddPlaylistTest()
+    public async Task AddPlaylistTest()
     {
         // Arrange
-        var playlist = new PlaylistEntity { Name = "Test Playlist" };
+        var playlist = PlaylistSeeds.EmptyPlaylist with
+        {
+            Name = "Test Playlist"
+        };
+
+        // Act
+        IcsDbContextSut.Playlists.Add(playlist);
+        await IcsDbContextSut.SaveChangesAsync();
+
+        // Assert
+        await using var dbx = await DbContextFactory.CreateDbContextAsync();
+        var actualPlaylist = await dbx.Playlists.SingleAsync(p => p.Id == playlist.Id);
+        DeepAssert.Equal(playlist, actualPlaylist);
+    }
+
+    [Fact]
+    public async Task AddSongToPlaylistTest()
+    {
+        // Arrange
+        var playlist = PlaylistSeeds.EmptyPlaylist with
+        {
+            Name = "Workout Mix",
+            PlaylistSongs = new List<PlaylistSongEntity>
+            {
+                PlaylistSongSeeds.EmptyPlaylistSong with
+                {
+                    Song = SongSeeds.EmptySongEntity with
+                    {
+                        Name = "Eye of the Tiger",
+                        Description = "Eye of the Tiger by Survivor",
+                        Artist = "Survivor",
+                        DurationInSeconds = 245,
+                        Genre = "Rock",
+                        SongUrl = "https://example.com/eye_of_the_tiger.mp3"
+                    }
+                },
+                PlaylistSongSeeds.EmptyPlaylistSong with
+                {
+                    Song = SongSeeds.EmptySongEntity with
+                    {
+                        Name = "Lose Yourself",
+                        Description = "Song by Eminem",
+                        Artist = "Eminem",
+                        DurationInSeconds = 326,
+                        Genre = "Hip-Hop",
+                        SongUrl = "https://example.com/lose_yourself.mp3"
+                    }
+                }
+            }
+        };
+
+        // Act
+        IcsDbContextSut.Playlists.Add(playlist);
+        await IcsDbContextSut.SaveChangesAsync();
+
+        // Assert
+        await using var dbx = await DbContextFactory.CreateDbContextAsync();
+        var playlistFromDb = await dbx.Playlists
+            .Include(p => p.PlaylistSongs)
+            .ThenInclude(p => p.Song)
+            .SingleAsync(p => p.Id == playlist.Id);
+
+        DeepAssert.Equal(playlistFromDb, playlist);
+    }
+
+    [Fact]
+    public async Task AddNew_PlaylistWithJustSongs()
+    {
+        // Arrange
+        var playlist = PlaylistSeeds.EmptyPlaylist with
+        {
+            Name = "Test Playlist",
+            PlaylistSongs = new List<PlaylistSongEntity>
+            {
+                PlaylistSongSeeds.EmptyPlaylistSong with
+                {
+                    SongId = SongSeeds.ShapeOfYou.Id
+                },
+                PlaylistSongSeeds.EmptyPlaylistSong with
+                {
+                    SongId = SongSeeds.BillieJean.Id
+                }
+            }
+        };
         
         // Act
         IcsDbContextSut.Playlists.Add(playlist);
-        IcsDbContextSut.SaveChanges();
+        await IcsDbContextSut.SaveChangesAsync();
         
         // Assert
-        var playlistFromDb = IcsDbContextSut.Playlists.FirstOrDefault(playlist1 => playlist1.Id == playlist.Id);    
-        Assert.Equal(playlist, playlistFromDb);
+        await using var dbx = await DbContextFactory.CreateDbContextAsync();
+        var actualPlaylist = await dbx.Playlists
+            .Include(p => p.PlaylistSongs)
+            .SingleAsync(p => p.Id == playlist.Id);
+        
+        DeepAssert.Equal(playlist, actualPlaylist);
     }
 
     [Fact]
-    public void AddSongToPlaylistTest()
+    public async Task GetAll_Playlists_ContainingSong()
     {
-        // Arrange
-        var playlist = new PlaylistEntity { Name = "Test Playlist" };
-        
-        var song = new SongEntity(
-            name: "Test SongEntity",
-            description: "Test SongEntity Description",
-            genre: "Test SongEntity Genre",
-            durationInSeconds: 10,
-            artist: "John Doe",
-            songUrl: "testurl"
-        );
-        
         // Act
-        IcsDbContextSut.Playlists.Add(playlist);
-        IcsDbContextSut.Songs.Add(song);
-        IcsDbContextSut.SaveChanges();
-        
-        playlist.AddSongItem(song);
-        IcsDbContextSut.SaveChanges();
+        var playlists = await IcsDbContextSut.Playlists.ToListAsync();
         
         // Assert
-        var playlistFromDb = IcsDbContextSut.Playlists.FirstOrDefault(playlist1 => playlist1.Id == playlist.Id);    
-        Assert.Equal(playlist, playlistFromDb);
-        Assert.Single(playlist.Songs);
-        Assert.Equal(playlist.Songs.Count, playlistFromDb?.Songs.Count);
-        Assert.Equal(playlist.Songs, playlistFromDb?.Songs);
-        Assert.Equal(song.Name, playlistFromDb?.Songs[0].Name);
+        DeepAssert.Contains(PlaylistSeeds.PopPlaylist, playlists, nameof(PlaylistEntity.PlaylistSongs));
+    }
+    
+    [Fact]
+    public async Task GetById_Playlist()
+    {
+        // Act
+        var playlist = await IcsDbContextSut.Playlists.SingleAsync(p => p.Id == PlaylistSeeds.PopPlaylist.Id);
+        
+        // Assert
+        DeepAssert.Equal(PlaylistSeeds.PopPlaylist with { PlaylistSongs = Array.Empty<PlaylistSongEntity>() }, playlist);
     }
 
     [Fact]
-    public void GetSongsFromPlaylistTest()
+    public async Task Update_Playlist_Persisted()
     {
         // Arrange
-        var playlist = new PlaylistEntity { Name = "Test Playlist" };
-        var song1 = new SongEntity(
-            name: "First SongEntity",
-            description: "Test SongEntity Description",
-            genre: "Test SongEntity Genre",
-            durationInSeconds: 10,
-            artist: "John Doe",
-            songUrl: "testurl"
-        );
-        var song2 = new SongEntity(
-            name: "Second SongEntity",
-            description: "Test SongEntity Description",
-            genre: "Test SongEntity Genre",
-            durationInSeconds: 10,
-            artist: "John Doe",
-            songUrl: "testurl"
-        );
-        
+        var basePlaylist = PlaylistSeeds.PopPlaylistUpdate;
+        var playlist =
+            basePlaylist with
+            {
+                Name = basePlaylist.Name + " Updated"
+            };
+
         // Act
-        IcsDbContextSut.Playlists.Add(playlist);
-        IcsDbContextSut.Songs.Add(song1);
-        IcsDbContextSut.Songs.Add(song2);
-        IcsDbContextSut.SaveChanges();
-        
-        var playlistDb = IcsDbContextSut.Playlists.FirstOrDefault(p => p.Id == playlist.Id);
-        var s1 = IcsDbContextSut.Songs.FirstOrDefault(s => s.Id == song1.Id);
-        var s2 = IcsDbContextSut.Songs.FirstOrDefault(s => s.Id == song2.Id);
-        
-        // Assert  
-        Assert.NotNull(s1); 
-        Assert.NotNull(s2);
-        Assert.NotNull(playlistDb);
-        
-        playlistDb.AddSongItem(s1);
-        playlistDb.AddSongItem(s2);
-        IcsDbContextSut.SaveChanges();
+        IcsDbContextSut.Playlists.Update(playlist);
+        await IcsDbContextSut.SaveChangesAsync();
 
-        Assert.Equal(2, playlistDb.Songs.Count);
-        Assert.Collection(playlistDb.Songs,
-            song => Assert.Equal(song1.Id, song.Id),
-            song => Assert.Equal(song2.Id, song.Id)
-        );
+        // Assert
+        await using var dbx = await DbContextFactory.CreateDbContextAsync();
+        var actualEntity = await dbx.Playlists.SingleAsync(i => i.Id == playlist.Id);
+        DeepAssert.Equal(playlist, actualEntity);
     }
-
+    
     [Fact]
-    public void RemoveSongFromPlaylistTest()
+    public async Task Delete_PlaylistWithoutSongs_Deleted()
     {
-        var playlist = new PlaylistEntity { Name = "Test Playlist" };
-        var song1 = new SongEntity(
-            name: "First SongEntity",
-            description: "Test SongEntity Description",
-            genre: "Test SongEntity Genre",
-            durationInSeconds: 10,
-            artist: "John Doe",
-            songUrl: "testurl"
-        );
-        // Act
-        IcsDbContextSut.Playlists.Add(playlist);
-        IcsDbContextSut.Songs.Add(song1);
-        IcsDbContextSut.SaveChanges();
-        
-        var playlistDb = IcsDbContextSut.Playlists.FirstOrDefault(p => p.Id == playlist.Id);
-        var s1 = IcsDbContextSut.Songs.FirstOrDefault(s => s.Id == song1.Id);
-        
-        // Assert  
-        Assert.NotNull(s1); 
-        Assert.NotNull(playlistDb);
-        
-        playlistDb.AddSongItem(s1);
-        IcsDbContextSut.SaveChanges();
+        // Arrange
+        var basePlaylist = PlaylistSeeds.PopPlaylistDelete;
 
-        Assert.Single(playlist.Songs);
-        
-        playlistDb.RemoveSongItem(s1);
-        IcsDbContextSut.SaveChanges();
-        
-        Assert.Empty(playlistDb.Songs);
+        // Act
+        IcsDbContextSut.Playlists.Remove(basePlaylist);
+        await IcsDbContextSut.SaveChangesAsync();
+
+        // Assert
+        Assert.False(await IcsDbContextSut.Playlists.AnyAsync(i => i.Id == basePlaylist.Id));
     }
+    
+    [Fact]
+    public async Task DeleteById_PlaylistWithoutSongs_Deleted()
+    {
+        // Arrange
+        var basePlaylist = PlaylistSeeds.PopPlaylistDelete;
+
+        // Act
+        IcsDbContextSut.Remove(
+            IcsDbContextSut.Playlists.Single(i => i.Id == basePlaylist.Id));
+        await IcsDbContextSut.SaveChangesAsync();
+
+        // Assert
+        Assert.False(await IcsDbContextSut.Playlists.AnyAsync(i => i.Id == basePlaylist.Id));
+    } 
+    
+    [Fact]
+    public async Task Delete_PlaylistWithPlaylistSongs_Deleted()
+    {
+        // Arrange
+        var basePlaylist = PlaylistSeeds.PopPlaylistUpdate;
+
+        // Act
+        IcsDbContextSut.Playlists.Remove(basePlaylist);
+        await IcsDbContextSut.SaveChangesAsync();
+
+        // Assert
+        Assert.False(await IcsDbContextSut.Playlists.AnyAsync(i => i.Id == basePlaylist.Id));
+        Assert.False(await IcsDbContextSut.PlaylistSongs
+            .AnyAsync(i => basePlaylist.PlaylistSongs.Select(playlistSong => playlistSong.Id).Contains(i.Id)));
+    } 
 }

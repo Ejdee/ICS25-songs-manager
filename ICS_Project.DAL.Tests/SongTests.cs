@@ -1,120 +1,99 @@
+using System;
+using System.Threading.Tasks;
+using ICS_Project.Common.Tests.Seeds;
 using ICS_Project.DAL.Entities;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace ICS_Project.DAL.Tests;
 
 [Collection("Sequential")]
-public class SongTests : IntegrationTestBase
+public class SongTests(ITestOutputHelper output) : IntegrationTestBase(output)
 {
     [Fact]
-    public void AddSongTest()
+    public async Task AddNew_Song_Persisted()
     {
         // Arrange
-        var song = new SongEntity(
-            name: "Test SongEntity",
-            description: "Test SongEntity Description",
-            genre: "Test SongEntity Genre",
-            durationInSeconds: 10,
-            artist: "John Doe",
-            songUrl: "testurl"
-        );
-        
+        SongEntity entity = new()
+        {
+            Id = Guid.Parse("C5DE45D7-64A0-4E8D-AC7F-BF5CFDFB0EFC"),
+            Name = "Test Song",
+            Description = "Test Song Description",
+            Genre = "Test Genre",
+            DurationInSeconds = 300,
+            Artist = "Test Artist",
+            SongUrl = "https://example.com/test_song.mp3"
+        };
+
         // Act
-        IcsDbContextSut.Songs.Add(song);
-        IcsDbContextSut.SaveChanges();
+        IcsDbContextSut.Songs.Add(entity);
+        await IcsDbContextSut.SaveChangesAsync();
 
         // Assert
-        var songFromDb = IcsDbContextSut.Songs.FirstOrDefault(song1 => song1.Id == song.Id);
-        Assert.Equal(song, songFromDb);
+        await using var dbx = await DbContextFactory.CreateDbContextAsync();
+        var actualEntity = await dbx.Songs.SingleAsync(s => s.Id == entity.Id);
+        DeepAssert.Equal(entity, actualEntity);
     }
 
     [Fact]
-    public void UpdateSongNameTest()
+    public async Task Update_Song_Persisted()
     {
         // Arrange
-        var song = new SongEntity(
-            name: "Test SongEntity",
-            description: "Test SongEntity Description",
-            genre: "Test SongEntity Genre",
-            durationInSeconds: 10,
-            artist: "John Doe",
-            songUrl: "testurl"
-        );
-        IcsDbContextSut.Songs.Add(song);
-        IcsDbContextSut.SaveChanges();
+        var baseEntity = SongSeeds.SongEntityUpdate;
+        var entity = baseEntity with
+        {
+            Name = baseEntity.Name + " Updated",
+            Description = baseEntity.Description + " Updated"
+        };
 
         // Act
-        var songFromDb = IcsDbContextSut.Songs.FirstOrDefault(s => s.Id == song.Id);
-        if (songFromDb != null) songFromDb.Name = "Updated SongEntity Name";
-        IcsDbContextSut.SaveChanges();
+        IcsDbContextSut.Songs.Update(entity);
+        await IcsDbContextSut.SaveChangesAsync();
 
         // Assert
-        var updatedSong = IcsDbContextSut.Songs.FirstOrDefault(s => s.Id == song.Id);
-        Assert.Equal("Updated SongEntity Name", updatedSong?.Name);
+        await using var dbx = await DbContextFactory.CreateDbContextAsync();
+        var actualEntity = await dbx.Songs.SingleAsync(s => s.Id == entity.Id);
+        DeepAssert.Equal(entity, actualEntity);
+    }
+    
+    [Fact]
+    public async Task Delete_Song_SeededSongDeleted()
+    {
+        // Arrange
+        var entityBase = SongSeeds.SongEntityDelete;
+
+        // Act
+        IcsDbContextSut.Songs.Remove(entityBase);
+        await IcsDbContextSut.SaveChangesAsync();
+
+        // Assert
+        Assert.False(await IcsDbContextSut.Songs.AnyAsync(s => s.Id == entityBase.Id));
+    }
+
+    
+    [Fact]
+    public async Task DeleteById_Song_SeededSongDeleted()
+    {
+        // Arrange
+        var entityBase = SongSeeds.SongEntityDelete;
+
+        // Act
+        IcsDbContextSut.Remove(await IcsDbContextSut.Songs.SingleAsync(s => s.Id == entityBase.Id));
+        await IcsDbContextSut.SaveChangesAsync();
+
+        // Assert
+        Assert.False(await IcsDbContextSut.Songs.AnyAsync(s => s.Id == entityBase.Id));
     }
 
     [Fact]
-    public void DeleteSongTest()
+    public async Task Delete_SongUsedInPlaylist_Throws()
     {
         // Arrange
-        var song = new SongEntity(
-            name: "Test SongEntity",
-            description: "Test SongEntity Description",
-            genre: "Test SongEntity Genre",
-            durationInSeconds: 10,
-            artist: "John Doe",
-            songUrl: "testurl"
-        );
-        IcsDbContextSut.Songs.Add(song);
-        IcsDbContextSut.SaveChanges(); 
+        var entityBase = SongSeeds.ShapeOfYou;
         
-        // Act
-        var songFromDb = IcsDbContextSut.Songs.FirstOrDefault(s => s.Id == song.Id);
-        Assert.Equal(song, songFromDb);
-        
-        IcsDbContextSut.Songs.Remove(song);
-        IcsDbContextSut.SaveChanges();
-        
-        // Assert
-        var deletedSong = IcsDbContextSut.Songs.FirstOrDefault(s => s.Id == song.Id);
-        Assert.Null(deletedSong);
-    }
-
-    [Fact]
-    public void SongInMorePlaylistTest()
-    {
-        // Arrange
-        var song = new SongEntity(
-            name: "Test SongEntity",
-            description: "Test SongEntity Description",
-            genre: "Test SongEntity Genre",
-            durationInSeconds: 10,
-            artist: "John Doe",
-            songUrl: "testurl"
-        );
-
-        var playlist1 = new PlaylistEntity { Name = "Playlist1" };
-        var playlist2 = new PlaylistEntity { Name = "Playlist2" };
-
-        // Act
-        IcsDbContextSut.Songs.Add(song);
-        IcsDbContextSut.Playlists.Add(playlist1);
-        IcsDbContextSut.Playlists.Add(playlist2);
-        IcsDbContextSut.SaveChanges();
-        
-        var playlist1Db = IcsDbContextSut.Playlists.FirstOrDefault(p => p.Id == playlist1.Id);
-        var playlist2Db = IcsDbContextSut.Playlists.FirstOrDefault(p => p.Id == playlist2.Id);
-        
-        playlist1Db?.AddSongItem(song);
-        playlist2Db?.AddSongItem(song);
-        
-        IcsDbContextSut.SaveChanges();
-        
-        var songInPlaylist1 = IcsDbContextSut.Songs.FirstOrDefault(s => s.Id == song.Id);
-        var songInPlaylist2 = IcsDbContextSut.Songs.FirstOrDefault(s => s.Id == song.Id);
-
-        // Assert
-        Assert.NotNull(songInPlaylist1);
-        Assert.NotNull(songInPlaylist2);
+        // Act & Assert
+        IcsDbContextSut.Songs.Remove(entityBase);
+        await Assert.ThrowsAsync<DbUpdateException>(async () => await IcsDbContextSut.SaveChangesAsync());
     }
 }
