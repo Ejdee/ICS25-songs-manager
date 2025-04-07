@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ICS_Project.DAL.Migrations
 {
     [DbContext(typeof(IcsDbContext))]
-    [Migration("20250407103545_InitialMigration")]
+    [Migration("20250407151142_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -48,17 +48,12 @@ namespace ICS_Project.DAL.Migrations
                     b.Property<Guid>("PlaylistId")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("SongEntityId")
-                        .HasColumnType("TEXT");
-
                     b.Property<Guid>("SongId")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.HasIndex("PlaylistId");
-
-                    b.HasIndex("SongEntityId");
 
                     b.HasIndex("SongId");
 
@@ -107,10 +102,6 @@ namespace ICS_Project.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ICS_Project.DAL.Entities.SongEntity", null)
-                        .WithMany("PlaylistSongs")
-                        .HasForeignKey("SongEntityId");
-
                     b.HasOne("ICS_Project.DAL.Entities.SongEntity", "Song")
                         .WithMany()
                         .HasForeignKey("SongId")
@@ -123,11 +114,6 @@ namespace ICS_Project.DAL.Migrations
                 });
 
             modelBuilder.Entity("ICS_Project.DAL.Entities.PlaylistEntity", b =>
-                {
-                    b.Navigation("PlaylistSongs");
-                });
-
-            modelBuilder.Entity("ICS_Project.DAL.Entities.SongEntity", b =>
                 {
                     b.Navigation("PlaylistSongs");
                 });

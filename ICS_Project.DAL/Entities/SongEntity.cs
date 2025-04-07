@@ -11,6 +11,4 @@ public record SongEntity: IEntity
     public TimeSpan DurationInSeconds { get; set; }
     public required string Artist { get; set; }
     public required string SongUrl { get; set; }
-    
-    public ICollection<PlaylistSongEntity> PlaylistSongs { get; init; } = new List<PlaylistSongEntity>();
 }
