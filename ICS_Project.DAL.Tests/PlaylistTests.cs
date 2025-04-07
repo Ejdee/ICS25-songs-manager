@@ -21,7 +21,8 @@ public class PlaylistTests(ITestOutputHelper output) : IntegrationTestBase(outpu
         // Arrange
         var playlist = PlaylistSeeds.EmptyPlaylist with
         {
-            Name = "Test Playlist"
+            Name = "Test Playlist",
+            Description = "Some description"
         };
 
         // Act
@@ -41,6 +42,7 @@ public class PlaylistTests(ITestOutputHelper output) : IntegrationTestBase(outpu
         var playlist = PlaylistSeeds.EmptyPlaylist with
         {
             Name = "Workout Mix",
+            Description = "Hype up your workout with these songs!",
             PlaylistSongs = new List<PlaylistSongEntity>
             {
                 PlaylistSongSeeds.EmptyPlaylistSong with
@@ -50,7 +52,7 @@ public class PlaylistTests(ITestOutputHelper output) : IntegrationTestBase(outpu
                         Name = "Eye of the Tiger",
                         Description = "Eye of the Tiger by Survivor",
                         Artist = "Survivor",
-                        DurationInSeconds = 245,
+                        DurationInSeconds = TimeSpan.FromSeconds(245),
                         Genre = "Rock",
                         SongUrl = "https://example.com/eye_of_the_tiger.mp3"
                     }
@@ -62,7 +64,7 @@ public class PlaylistTests(ITestOutputHelper output) : IntegrationTestBase(outpu
                         Name = "Lose Yourself",
                         Description = "Song by Eminem",
                         Artist = "Eminem",
-                        DurationInSeconds = 326,
+                        DurationInSeconds = TimeSpan.FromSeconds(326),
                         Genre = "Hip-Hop",
                         SongUrl = "https://example.com/lose_yourself.mp3"
                     }
@@ -91,6 +93,7 @@ public class PlaylistTests(ITestOutputHelper output) : IntegrationTestBase(outpu
         var playlist = PlaylistSeeds.EmptyPlaylist with
         {
             Name = "Test Playlist",
+            Description = "test description",
             PlaylistSongs = new List<PlaylistSongEntity>
             {
                 PlaylistSongSeeds.EmptyPlaylistSong with

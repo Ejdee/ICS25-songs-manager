@@ -22,7 +22,7 @@ public static class SongSeeds
         Name = "Hotel California",
         Description = "Welcome to the Hotel California",
         Genre = "Rock",
-        DurationInSeconds = 390,
+        DurationInSeconds = TimeSpan.FromSeconds(390),
         Artist = "Eagles",
         SongUrl = "someUrl.com"
     };
@@ -36,7 +36,7 @@ public static class SongSeeds
         Name = "Shape of You",
         Description = "The club isn't the best place to find a lover",
         Genre = "Pop",
-        DurationInSeconds = 233,
+        DurationInSeconds = TimeSpan.FromSeconds(233),
         Artist = "Ed Sheeran",
         SongUrl = "someUrl.com"
     };
@@ -47,7 +47,7 @@ public static class SongSeeds
         Name = "Billie Jean",
         Description = "Billie Jean is not my lover",
         Genre = "Pop",
-        DurationInSeconds = 294,
+        DurationInSeconds = TimeSpan.FromSeconds(294),
         Artist = "Michael Jackson",
         SongUrl = "someUrl.com"
     };

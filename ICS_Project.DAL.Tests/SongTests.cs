@@ -21,7 +21,7 @@ public class SongTests(ITestOutputHelper output) : IntegrationTestBase(output)
             Name = "Test Song",
             Description = "Test Song Description",
             Genre = "Test Genre",
-            DurationInSeconds = 300,
+            DurationInSeconds = TimeSpan.FromSeconds(300),
             Artist = "Test Artist",
             SongUrl = "https://example.com/test_song.mp3"
         };

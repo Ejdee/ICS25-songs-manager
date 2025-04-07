@@ -9,12 +9,14 @@ public static class PlaylistSeeds
     {
         Id = default,
         Name = default!,
+        Description = default!,
     };
     
     public static readonly PlaylistEntity PopPlaylist = new()
     {
         Id = Guid.Parse("3166a30b-36d0-430a-90cd-bed126670147"),
         Name = "Pop",
+        Description = "My favorite pop songs",
     };
     
     public static readonly PlaylistEntity PopPlaylistWithNoSongs = PopPlaylist with { Id = Guid.Parse("1244a30b-36d0-430a-90cd-bed126670148"), PlaylistSongs = new List<PlaylistSongEntity>()};
