@@ -14,7 +14,7 @@ public record PlaylistDetailModel : ModelBase
     {
         Id = Guid.NewGuid(),
         Name = string.Empty,
-        Description = String.Empty,
+        Description = string.Empty,
         DurationInSeconds = TimeSpan.Zero,
         SongCount = 0
     };
