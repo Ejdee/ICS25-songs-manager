@@ -17,7 +17,7 @@ public class Repository<TEntity>(
     public async ValueTask<bool> ExistsAsync(TEntity entity) => entity.Id != Guid.Empty
         && await _dbSet.AnyAsync(e => e.Id == entity.Id).ConfigureAwait(false);
 
-    public TEntity InsertAsync(TEntity entity) => _dbSet.Add(entity).Entity;
+    public TEntity Insert(TEntity entity) => _dbSet.Add(entity).Entity;
 
     public async Task<TEntity> UpdateAsync(TEntity entity)
     {

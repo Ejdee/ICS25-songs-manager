@@ -7,7 +7,7 @@ public interface IRepository<TEntity>
 {
     IQueryable<TEntity> GetAll();
     ValueTask<bool> ExistsAsync(TEntity entity);
-    TEntity InsertAsync(TEntity entity);
+    TEntity Insert(TEntity entity);
     Task<TEntity> UpdateAsync(TEntity entity);
     Task DeleteAsync(Guid id);
 }
