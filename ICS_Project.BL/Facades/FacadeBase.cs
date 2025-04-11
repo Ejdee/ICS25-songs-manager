@@ -3,6 +3,7 @@ using System.Reflection;
 using ICS_Project.BL.Facades.Interfaces;
 using ICS_Project.BL.Models;
 using ICS_Project.BL.Mappers.Interfaces;
+using ICS_Project.DAL.Entities;
 using ICS_Project.DAL.Interfaces;
 using ICS_Project.DAL.Mappers;
 using ICS_Project.DAL.Repositories;
@@ -42,13 +43,7 @@ public class FacadeBase<TEntity, TListModel, TDetailModel, TEntityMapper>(
     public virtual async Task<TDetailModel?> GetAsync(Guid id)
     {
         await using IUnitOfWork uow = UnitOfWorkFactory.Create();
-        IQueryable<TEntity> query = uow.GetRepository<TEntity, TEntityMapper>().GetAll();
-
-        foreach (string includePath in IncludesNavigationPathDetail)
-        {
-            query = query.Include(includePath);
-        }
-        
+        IQueryable<TEntity> query = CreateQueryWithIncludes(uow);
         TEntity? entity = await query.SingleOrDefaultAsync(e => e.Id == id).ConfigureAwait(false);
 
         return entity is null
@@ -59,14 +54,14 @@ public class FacadeBase<TEntity, TListModel, TDetailModel, TEntityMapper>(
     public virtual async Task<IEnumerable<TListModel>> GetAsync()
     {
         await using IUnitOfWork uow = UnitOfWorkFactory.Create();
-        List<TEntity> entities = await uow
-            .GetRepository<TEntity, TEntityMapper>()
-            .GetAll()
-            .ToListAsync().ConfigureAwait(false);
+        IQueryable<TEntity> query = CreateQueryWithIncludes(uow);
+
+        List<TEntity> entities = await query.ToListAsync().ConfigureAwait(false);
+            
         return ModelMapper.MapToListModel(entities);
     }
 
-    public virtual async Task<TDetailModel?> SaveAsync(TDetailModel model)
+    public virtual async Task<TDetailModel> SaveAsync(TDetailModel model)
     {
         TDetailModel result;
         GuardCollectionsAreNotSet(model);
@@ -106,5 +101,19 @@ public class FacadeBase<TEntity, TListModel, TDetailModel, TEntityMapper>(
                     "Current BL and DAL infrastructure disallows insert or update of models with adjacent collections.");
             }
         }
+    }
+
+    private IQueryable<TEntity> CreateQueryWithIncludes(IUnitOfWork uow)
+    {
+        IQueryable<TEntity> query = uow
+            .GetRepository<TEntity, TEntityMapper>()
+            .GetAll();
+
+        foreach (string includePath in IncludesNavigationPathDetail)
+        {
+            query = query.Include(includePath);
+        }
+            
+        return query;
     }
 }

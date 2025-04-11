@@ -36,10 +36,7 @@ public class PlaylistFacade(IUnitOfWorkFactory unitOfWorkFactory, PlaylistModelM
         await using IUnitOfWork uow = UnitOfWorkFactory.Create();
         IRepository<PlaylistEntity> repository = uow.GetRepository<PlaylistEntity, PlaylistEntityMapper>();
 
-        IQueryable<PlaylistEntity> query = repository
-            .GetAll()
-            .Include(p => p.PlaylistSongs)
-            .ThenInclude(ps => ps.Song);
+        IQueryable<PlaylistEntity> query = repository.GetAll();
 
         // Apply sorting 
         switch (sortOption)
@@ -58,8 +55,8 @@ public class PlaylistFacade(IUnitOfWorkFactory unitOfWorkFactory, PlaylistModelM
 
             case PlaylistSortOption.Duration:
                 query = ascending
-                    ? query.OrderBy(p => p.PlaylistSongs.Sum(ps => ps.Song.DurationInSeconds.TotalSeconds))
-                    : query.OrderByDescending(p => p.PlaylistSongs.Sum(ps => ps.Song.DurationInSeconds.TotalSeconds));
+                    ? query.OrderBy(p => p.PlaylistSongs.Sum(ps => ps.Song.DurationInSeconds))
+                    : query.OrderByDescending(p => p.PlaylistSongs.Sum(ps => ps.Song.DurationInSeconds));
                 break;
             
             default:
