@@ -1,0 +1,16 @@
+trigger:
+  - master
+
+pool:
+  vmImage: windows-latest
+
+steps:
+  - task: DotNetCoreCLI@2
+    name: "Build"
+    inputs:
+      command: 'build'
+      projects: '**/ICS_Project.sln'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'test'
+      projects: '**/*Tests*.csproj'
