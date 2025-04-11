@@ -27,8 +27,7 @@ public class PlaylistModelMapper(PlaylistSongModelMapper playlistSongModelMapper
                 Description = entity.Description,
                 DurationInSeconds = GetTotalDuration(entity),
                 SongCount = GetSongCount(entity),
-                Songs = entity.PlaylistSongs
-                    .Select(playlistSongModelMapper.MapToListModel)
+                Songs = playlistSongModelMapper.MapToListModel(entity.PlaylistSongs)
                     .ToObservableCollection()
             };
 
@@ -41,8 +40,8 @@ public class PlaylistModelMapper(PlaylistSongModelMapper playlistSongModelMapper
         };
     
     private static TimeSpan GetTotalDuration(PlaylistEntity playlistEntity)
-        => TimeSpan.FromSeconds(playlistEntity.PlaylistSongs?.Sum(x => x.Song.DurationInSeconds.TotalSeconds) ?? 0);
+        => TimeSpan.FromSeconds(playlistEntity.PlaylistSongs.Sum(x => x.Song.DurationInSeconds));
     
     private static int GetSongCount(PlaylistEntity playlistEntity)
-        => playlistEntity.PlaylistSongs?.Count ?? 0;
+        => playlistEntity.PlaylistSongs.Count;
 }

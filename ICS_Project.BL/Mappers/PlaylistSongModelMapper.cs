@@ -14,7 +14,7 @@ public class PlaylistSongModelMapper
                 Id = entity.Id,
                 SongId = entity.SongId,
                 SongName = entity.Song.Name,
-                SongDurationInSeconds = entity.Song.DurationInSeconds,
+                SongDurationInSeconds = TimeSpan.FromSeconds(entity.Song.DurationInSeconds),
             };
 
     public override PlaylistSongDetailModel MapToDetailModel(PlaylistSongEntity? entity)
@@ -25,7 +25,7 @@ public class PlaylistSongModelMapper
                 Id = entity.Id,
                 SongId = entity.SongId,
                 SongName = entity.Song.Name,
-                SongDurationInSeconds = entity.Song.DurationInSeconds,
+                SongDurationInSeconds = TimeSpan.FromSeconds(entity.Song.DurationInSeconds),
                 Artist = entity.Song.Artist,
                 Genre = entity.Song.Genre,
                 SongUrl = entity.Song.SongUrl
