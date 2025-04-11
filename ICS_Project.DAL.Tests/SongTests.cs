@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using ICS_Project.Common.Tests;
 using ICS_Project.Common.Tests.Seeds;
 using ICS_Project.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +22,7 @@ public class SongTests(ITestOutputHelper output) : IntegrationTestBase(output)
             Name = "Test Song",
             Description = "Test Song Description",
             Genre = "Test Genre",
-            DurationInSeconds = TimeSpan.FromSeconds(300),
+            DurationInSeconds = 300,
             Artist = "Test Artist",
             SongUrl = "https://example.com/test_song.mp3"
         };

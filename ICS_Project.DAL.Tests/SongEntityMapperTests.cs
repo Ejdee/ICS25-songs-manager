@@ -16,7 +16,7 @@ public class SongEntityMapperTests(ITestOutputHelper output) : IntegrationTestBa
             Name = "Old Name",
             Description = "Old description",
             Artist = "Old Artist",
-            DurationInSeconds = TimeSpan.FromSeconds(100),
+            DurationInSeconds = 100,
             Genre = "Old Genre",
             SongUrl = "Old Song URL",
         };
@@ -26,7 +26,7 @@ public class SongEntityMapperTests(ITestOutputHelper output) : IntegrationTestBa
             Name = "New Name",
             Description = "New Description",
             Artist = "New Artist",
-            DurationInSeconds = TimeSpan.FromSeconds(200),
+            DurationInSeconds = 200,
             Genre = "New Genre",
             SongUrl = "New Song URL",
         };
@@ -38,7 +38,7 @@ public class SongEntityMapperTests(ITestOutputHelper output) : IntegrationTestBa
         Assert.Equal("New Name", existing.Name);
         Assert.Equal("New Description", existing.Description);
         Assert.Equal("New Artist", existing.Artist);
-        Assert.Equal(TimeSpan.FromSeconds(200), existing.DurationInSeconds);
+        Assert.Equal(200, existing.DurationInSeconds);
         Assert.Equal("New Genre", existing.Genre);
         Assert.Equal("New Song URL", existing.SongUrl);
     }

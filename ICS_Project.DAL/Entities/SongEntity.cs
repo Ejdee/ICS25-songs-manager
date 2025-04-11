@@ -8,7 +8,7 @@ public record SongEntity: IEntity
     public required string Name { get; set; }
     public required string Description { get; set; }
     public required string Genre { get; set; }
-    public TimeSpan DurationInSeconds { get; set; }
+    public int DurationInSeconds { get; set; }
     public required string Artist { get; set; }
     public required string SongUrl { get; set; }
 }

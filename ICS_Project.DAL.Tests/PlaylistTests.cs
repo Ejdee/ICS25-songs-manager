@@ -52,7 +52,7 @@ public class PlaylistTests(ITestOutputHelper output) : IntegrationTestBase(outpu
                         Name = "Eye of the Tiger",
                         Description = "Eye of the Tiger by Survivor",
                         Artist = "Survivor",
-                        DurationInSeconds = TimeSpan.FromSeconds(245),
+                        DurationInSeconds = 245,
                         Genre = "Rock",
                         SongUrl = "https://example.com/eye_of_the_tiger.mp3"
                     }
@@ -64,7 +64,7 @@ public class PlaylistTests(ITestOutputHelper output) : IntegrationTestBase(outpu
                         Name = "Lose Yourself",
                         Description = "Song by Eminem",
                         Artist = "Eminem",
-                        DurationInSeconds = TimeSpan.FromSeconds(326),
+                        DurationInSeconds = 326,
                         Genre = "Hip-Hop",
                         SongUrl = "https://example.com/lose_yourself.mp3"
                     }
