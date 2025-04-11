@@ -4,10 +4,10 @@ namespace ICS_Project.BL.Models;
 
 public record PlaylistDetailModel : ModelBase
 { 
-    public required string Name { get; init; }
-    public required string Description { get; init; }
-    public TimeSpan DurationInSeconds { get; init; }
-    public int SongCount { get; init; }
+    public required string Name { get; set; }
+    public required string Description { get; set; }
+    public TimeSpan DurationInSeconds { get; set; }
+    public int SongCount { get; set; }
     public ObservableCollection<PlaylistSongListModel> Songs { get; init; } = new();
     
     public static PlaylistDetailModel Empty => new()
