@@ -1,7 +1,7 @@
 using KellermanSoftware.CompareNetObjects;
 using Xunit.Sdk;
 
-namespace ICS_Project.Common.Tests.Seeds;
+namespace ICS_Project.Common.Tests;
 
 public static class DeepAssert
 {
