@@ -133,4 +133,27 @@ public class PlaylistSongFacadeTests : FacadeTestBase
         Assert.NotNull(playlist);
         Assert.DoesNotContain(playlist.Songs, s => s.SongId == nonExistingPlaylistSong.SongId);
     }
+
+    [Fact]
+    public async Task MapSongToExistingDetail_ExistingSong()
+    {
+        //Arrange
+        var newSong = new SongListModel()
+        {
+            Name = SongSeeds.SongA.Name,
+            Id = SongSeeds.SongA.Id,
+            DurationInSeconds = TimeSpan.FromSeconds(SongSeeds.SongA.DurationInSeconds)
+        };
+        
+        var detailModel = PlaylistSongModelMapper.MapToDetailModel(PlaylistSongSeeds.EmptyPlaylistSong);
+        
+        //Act 
+        PlaylistSongModelMapper.MapToExistingDetailModel(detailModel, newSong);
+        await _playlistSongFacadeSUT.SaveAsync(detailModel, PlaylistSeeds.PlaylistA.Id);
+        var playlist = await _playlistFacadeSUT.GetAsync(PlaylistSeeds.PlaylistA.Id);
+        
+        //Assert
+        Assert.NotNull(playlist);
+        Assert.Contains(playlist.Songs, s => s.SongId == newSong.Id);
+    }
 }
