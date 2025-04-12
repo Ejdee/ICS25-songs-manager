@@ -37,6 +37,7 @@ public class PlaylistSongModelMapper
             Id = detailModel.Id,
             SongId = detailModel.SongId,
             SongName = detailModel.SongName,
+            SongDurationInSeconds = detailModel.SongDurationInSeconds,
         };
 
     public void MapToExistingDetailModel(PlaylistSongDetailModel existingDetailModel, SongListModel song)
