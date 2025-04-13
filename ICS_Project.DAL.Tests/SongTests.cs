@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using ICS_Project.Common.Tests;
 using ICS_Project.Common.Tests.Seeds;
 using ICS_Project.DAL.Entities;
 using Microsoft.EntityFrameworkCore;

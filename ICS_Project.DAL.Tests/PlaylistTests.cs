@@ -21,7 +21,8 @@ public class PlaylistTests(ITestOutputHelper output) : IntegrationTestBase(outpu
         // Arrange
         var playlist = PlaylistSeeds.EmptyPlaylist with
         {
-            Name = "Test Playlist"
+            Name = "Test Playlist",
+            Description = "Some description"
         };
 
         // Act
@@ -41,6 +42,7 @@ public class PlaylistTests(ITestOutputHelper output) : IntegrationTestBase(outpu
         var playlist = PlaylistSeeds.EmptyPlaylist with
         {
             Name = "Workout Mix",
+            Description = "Hype up your workout with these songs!",
             PlaylistSongs = new List<PlaylistSongEntity>
             {
                 PlaylistSongSeeds.EmptyPlaylistSong with
@@ -91,6 +93,7 @@ public class PlaylistTests(ITestOutputHelper output) : IntegrationTestBase(outpu
         var playlist = PlaylistSeeds.EmptyPlaylist with
         {
             Name = "Test Playlist",
+            Description = "test description",
             PlaylistSongs = new List<PlaylistSongEntity>
             {
                 PlaylistSongSeeds.EmptyPlaylistSong with

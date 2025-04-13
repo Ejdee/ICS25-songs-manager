@@ -10,5 +10,5 @@ public record PlaylistSongEntity : IEntity
     public required PlaylistEntity Playlist { get; init; }
     public required SongEntity Song { get; init; }
     
-    public Guid Id { get; init; }
+    public Guid Id { get; set; }
 }

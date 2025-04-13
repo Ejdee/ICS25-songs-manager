@@ -52,10 +52,63 @@ public static class SongSeeds
         SongUrl = "someUrl.com"
     };
     
+    public static readonly SongEntity SongA = new()
+    {
+        Id = Guid.Parse("ee4b2a65-b052-4bad-b813-8b50c4feff46"),
+        Name = "A",
+        Description = "Alphabetical sort test",
+        Genre = "AlphaGenre",
+        DurationInSeconds = 100,
+        Artist = "Michael Jackson",
+        SongUrl = "someUrl.com"
+    };
+    
+    public static readonly SongEntity SongB = new()
+    {
+        Id = Guid.Parse("eb37916f-6d66-4e12-9723-7d78ceb23e03"),
+        Name = "B",
+        Description = "Alphabetical sort test2",
+        Genre = "BetaGenre",
+        DurationInSeconds = 200,
+        Artist = "Michael Jackson",
+        SongUrl = "someUrl.com"
+    };
+    
+    public static readonly SongEntity SongC = new()
+    {
+        Id = Guid.Parse("d6c7ab96-8a41-44f7-b6b6-e8eae8e04b41"),
+        Name = "C",
+        Description = "Alphabetical sort test3",
+        Genre = "AlphaGenre",
+        DurationInSeconds = 300,
+        Artist = "Michael Jackson",
+        SongUrl = "someUrl.com"
+    };
+    
+    public static readonly SongEntity SongZ = new()
+    {
+        Id = Guid.Parse("aac70000-8a41-44f7-b6b6-e8eae8e04b41"),
+        Name = "Z",
+        Description = "Alphabetical sort test3",
+        Genre = "AlphaGenre",
+        DurationInSeconds = 400,
+        Artist = "Michael Jackson",
+        SongUrl = "someUrl.com"
+    };
     
     public static DbContext SeedSongs(this DbContext dbx)
     {
-        dbx.Set<SongEntity>().AddRange(HotelCF, BillieJean, ShapeOfYou, SongEntityDelete, SongEntityUpdate);
+        dbx.Set<SongEntity>().AddRange(
+            HotelCF,
+            BillieJean,
+            ShapeOfYou,
+            SongEntityDelete,
+            SongEntityUpdate,
+            SongA,
+            SongB,
+            SongC,
+            SongZ
+            );
         return dbx;
     }
     

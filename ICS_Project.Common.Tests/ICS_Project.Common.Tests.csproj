@@ -7,16 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Reference Include="xunit.abstractions">
-        <HintPath>..\..\..\..\.nuget\packages\xunit.abstractions\2.0.3\lib\netstandard2.0\xunit.abstractions.dll</HintPath>
-      </Reference>
-      <Reference Include="xunit.assert">
-        <HintPath>..\..\..\..\.nuget\packages\xunit.assert\2.5.3\lib\netstandard1.1\xunit.assert.dll</HintPath>
-      </Reference>
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="CompareNETObjects" Version="4.83.0" />
+        <PackageReference Include="CompareNETObjects" Version="4.83.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.0"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.0"/>
+        <PackageReference Include="xunit.assert" Version="2.7.0"/>
+        <PackageReference Include="xunit.extensibility.core" Version="2.7.0"/>
     </ItemGroup>
 
     <ItemGroup>
