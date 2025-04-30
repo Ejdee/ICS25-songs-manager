@@ -11,6 +11,7 @@
             <Entry Text="{Binding Song.Name}" Placeholder="Name" />
             <Entry Text="{Binding Song.Genre}" Placeholder="Genre" />
             <Entry Text="{Binding Song.Description}" Placeholder="Description" />
+            <Entry Text="{Binding Song.SongUrl}" Placeholder="Image URL" />
             <Entry Text="{Binding Song.Duration.TotalSeconds}" 
                    Placeholder="Duration (sec)" 
                    Keyboard="Numeric" />

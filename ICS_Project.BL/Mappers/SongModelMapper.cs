@@ -13,7 +13,9 @@ public class SongModelMapper
             {
                 Id = entity.Id,
                 Name = entity.Name,
-                DurationInSeconds = TimeSpan.FromSeconds(entity.DurationInSeconds)
+                DurationInSeconds = TimeSpan.FromSeconds(entity.DurationInSeconds),
+                SongUrl = entity.SongUrl,
+                Genre = entity.Genre,
             };
 
     public override SongDetailModel MapToDetailModel(SongEntity? entity)
