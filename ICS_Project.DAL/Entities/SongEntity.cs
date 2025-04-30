@@ -10,5 +10,5 @@ public record SongEntity: IEntity
     public required string Genre { get; set; }
     public int DurationInSeconds { get; set; }
     public required string Artist { get; set; }
-    public required string SongUrl { get; set; }
+    public required string? SongUrl { get; set; }
 }

@@ -20,7 +20,7 @@ public class SongFacade(IUnitOfWorkFactory unitOfWorkFactory, SongModelMapper mo
         await using IUnitOfWork uow = UnitOfWorkFactory.Create();
         IRepository<SongEntity> repository = uow.GetRepository<SongEntity, SongEntityMapper>();
 
-        var query = repository.GetAll().Where(s => s.Name.Contains(name));
+        var query = repository.GetAll().Where(s => s.Name.ToLower().Contains(name.ToLower()));
 
         var entities = await query.ToListAsync();
         return entities.Select(e => ModelMapper.MapToListModel(e));

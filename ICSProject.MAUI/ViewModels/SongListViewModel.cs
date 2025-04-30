@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using ICS_Project.BL.Facades;
 using ICS_Project.BL.Models;
 using System.Threading.Tasks;
+using ICS_Project.BL.Models.Enums;
 
 namespace ICSProject.MAUI.ViewModels;
 
@@ -12,14 +13,23 @@ public partial class SongListViewModel : ObservableObject
     private readonly SongFacade _songFacade;
 
     public ObservableCollection<SongListModel> Songs { get; } = new();
+    public ObservableCollection<string> GenreList { get; } = new() { "All", "Pop", "Rock", "Jazz", "Classical" }; // example genres
+    public ObservableCollection<SongSortOption> SortOptions { get; } = new()
+    {
+        SongSortOption.Name,
+        SongSortOption.Duration
+    };
 
-    public event EventHandler? AddSongRequested;
+    [ObservableProperty]
+    private string selectedGenre = "All";
+
+    [ObservableProperty]
+    private SongSortOption selectedSortOption = SongSortOption.Name;
+
 
     public IRelayCommand LoadSongsCommand { get; }
     public IRelayCommand AddSongPopupCommand { get; }
-
-    [ObservableProperty]
-    private string searchText;
+    
 
     public SongListViewModel(SongFacade songFacade)
     {
@@ -27,17 +37,6 @@ public partial class SongListViewModel : ObservableObject
 
         LoadSongsCommand = new RelayCommand(async () => await LoadSongsAsync());
         AddSongPopupCommand = new RelayCommand(() => AddSongRequested?.Invoke(this, EventArgs.Empty));
-    }
-
-    public async Task LoadSongsAsync()
-    {
-        Songs.Clear();
-        var songs = await _songFacade.GetAllAsync();
-
-        foreach (var song in songs)
-        {
-            Songs.Add(song);
-        }
     }
 
     public async Task AddSongAsync(string name, string genre, int durationInSeconds)
@@ -48,9 +47,13 @@ public partial class SongListViewModel : ObservableObject
             Genre = genre,
             Description = "TBD",
             DurationInSeconds = TimeSpan.FromSeconds(durationInSeconds),
-            Artist = "TBD",
-            SongUrl = "TBD"
+            Artist = "Generic",
+            SongUrl = "song_placeholder.png"
         };
+        if (!GenreList.Contains(genre))
+        {
+            GenreList.Add(genre); // ✅ Add new genre dynamically
+        }
 
         await _songFacade.SaveAsync(newSong);
         await LoadSongsAsync();
@@ -76,4 +79,79 @@ public partial class SongListViewModel : ObservableObject
         var detail = await _songFacade.GetAsync(selected.Id);
         NavigateToDetailRequested?.Invoke(this, detail);
     }
+    [ObservableProperty]
+    private string searchText;
+
+    partial void OnSearchTextChanged(string value)
+    {
+        _ = FilterSongsAsync(value); // Fire-and-forget or handle errors if needed
+    }
+
+    private async Task FilterSongsAsync(string query)
+    {
+        Songs.Clear();
+
+        var filtered = string.IsNullOrWhiteSpace(query)
+            ? await _songFacade.GetAllAsync()
+            : await _songFacade.SearchByNameAsync(query);
+
+        foreach (var song in filtered)
+            Songs.Add(song);
+    }
+    partial void OnSelectedGenreChanged(string value)
+    {
+        _ = FilterAndSortSongsAsync();
+    }
+
+    partial void OnSelectedSortOptionChanged(SongSortOption value)
+    {
+        _ = FilterAndSortSongsAsync();
+    }
+
+    public async Task LoadSongsAsync()
+    {
+        _allSongs = (await _songFacade.GetAllAsync()).ToList();
+        await FilterAndSortSongsAsync();
+        foreach (var song in _allSongs)
+        {
+            if (!GenreList.Contains(song.Genre))
+            {
+                GenreList.Add(song.Genre); // ✅ Add new genre dynamically
+            }
+        }
+    }
+
+    private List<SongListModel> _allSongs = new();
+
+    private Task FilterAndSortSongsAsync()
+    {
+        var filtered = _allSongs.AsEnumerable();
+
+        if (!string.IsNullOrWhiteSpace(SearchText))
+        {
+            filtered = filtered.Where(s => s.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (!string.IsNullOrWhiteSpace(SelectedGenre) && SelectedGenre != "All")
+        {
+            filtered = filtered.Where(s => s.Genre.Equals(SelectedGenre, StringComparison.OrdinalIgnoreCase));
+        }
+
+        filtered = SelectedSortOption switch
+        {
+            SongSortOption.Name => filtered.OrderBy(s => s.Name),
+            SongSortOption.Duration => filtered.OrderBy(s => s.DurationInSeconds),
+            _ => filtered
+        };
+
+        Songs.Clear();
+        foreach (var song in filtered)
+        {
+            Songs.Add(song);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public event EventHandler? AddSongRequested;
 }
