@@ -39,7 +39,7 @@ public partial class SongListViewModel : ObservableObject
         AddSongPopupCommand = new RelayCommand(() => AddSongRequested?.Invoke(this, EventArgs.Empty));
     }
 
-    public async Task AddSongAsync(string name, string genre, int durationInSeconds)
+    public async Task AddSongAsync(string name, string author, string genre, int durationInSeconds)
     {
         var newSong = new SongDetailModel
         {
@@ -47,7 +47,7 @@ public partial class SongListViewModel : ObservableObject
             Genre = genre,
             Description = "TBD",
             DurationInSeconds = TimeSpan.FromSeconds(durationInSeconds),
-            Artist = "Generic",
+            Artist = author,
             SongUrl = "song_placeholder.png"
         };
         if (!GenreList.Contains(genre))
@@ -120,7 +120,7 @@ public partial class SongListViewModel : ObservableObject
             }
         }
     }
-
+    
     private List<SongListModel> _allSongs = new();
 
     private Task FilterAndSortSongsAsync()

@@ -1,19 +1,19 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<toolkit:Popup
+﻿<toolkit:Popup
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     x:Class="ICSProject.MAUI.Views.AddSongPopup"
     Size="300,400"
-    Color="White">
+    Color="Transparent">
 
-    <VerticalStackLayout Spacing="15">
-        <Entry x:Name="NameEntry" Placeholder="Song Name" />
-        <Entry x:Name="GenreEntry" Placeholder="Genre" />
-        <Entry x:Name="DurationEntry" Placeholder="Duration (seconds)" Keyboard="Numeric" />
-
-        <Button Text="Save" BackgroundColor="Black" TextColor="White" Clicked="OnSaveClicked" />
-        <Button Text="Cancel" BackgroundColor="Gray" TextColor="White" Clicked="OnCancelClicked" />
-    </VerticalStackLayout>
-
+    <Border Stroke="Black" StrokeThickness="3" StrokeShape="RoundRectangle 12" Background="White" Padding="50">
+        <VerticalStackLayout Spacing="15">
+            <Entry x:Name="NameEntry" Placeholder="Song Name" />
+            <Entry x:Name="AuthorEntry" Placeholder="Author" />
+            <Entry x:Name="GenreEntry" Placeholder="Genre" />
+            <Entry x:Name="DurationEntry" Placeholder="Duration (seconds)" Keyboard="Numeric" />
+            <Button Text="Save" BackgroundColor="Black" TextColor="White" Clicked="OnSaveClicked" />
+            <Button Text="Cancel" BackgroundColor="Gray" TextColor="White" Clicked="OnCancelClicked" />
+        </VerticalStackLayout>
+    </Border>
 </toolkit:Popup>

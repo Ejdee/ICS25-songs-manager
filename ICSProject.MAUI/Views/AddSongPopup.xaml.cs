@@ -14,7 +14,7 @@ public partial class AddSongPopup : Popup
     private void OnSaveClicked(object sender, EventArgs e)
     {
         Result.SetResult((NameEntry.Text, GenreEntry.Text, DurationEntry.Text));
-        Close((NameEntry.Text, GenreEntry.Text, DurationEntry.Text));
+        Close((NameEntry.Text,AuthorEntry.Text, GenreEntry.Text, DurationEntry.Text));
     }
 
     private void OnCancelClicked(object sender, EventArgs e)

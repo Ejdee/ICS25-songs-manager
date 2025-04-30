@@ -10,9 +10,9 @@
 
             <Entry Text="{Binding Song.Name}" Placeholder="Name" />
             <Entry Text="{Binding Song.Genre}" Placeholder="Genre" />
-            <Entry Text="{Binding Song.Description}" Placeholder="Description" />
+            <Entry Text="{Binding Song.Artist}" Placeholder="Artist" />
             <Entry Text="{Binding Song.SongUrl}" Placeholder="Image URL" />
-            <Entry Text="{Binding Song.Duration.TotalSeconds}" 
+            <Entry Text="{Binding Song.DurationInSeconds}" 
                    Placeholder="Duration (sec)" 
                    Keyboard="Numeric" />
 
