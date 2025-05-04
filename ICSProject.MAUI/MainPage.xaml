@@ -1,109 +1,174 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:ICSProject.MAUI.Views"
+             xmlns:vm="clr-namespace:ICSProject.MAUI.ViewModels"
              x:Class="ICSProject.MAUI.MainPage"
-             BackgroundColor="White">
+             BackgroundColor="White"
+             x:DataType="vm:MainViewModel">
 
     <Grid RowDefinitions="Auto,*" ColumnDefinitions="200,*">
         <!-- Sidebar -->
         <StackLayout Grid.RowSpan="2" BackgroundColor="#F6EFF8" Spacing="20" Padding="10">
-            <Label Text="▶ SONG THINGY" FontAttributes="Bold" FontSize="20" />
-            <Label Text="Playlists" />
-            <Label Text="Songs" FontAttributes="Bold" BackgroundColor="#DCD0E8" Padding="10,5"/>
-            <Label Text="Genre" FontAttributes="Bold" />
-            <Picker ItemsSource="{Binding GenreList}" SelectedItem="{Binding SelectedGenre}" />
-            <Label Text="Sort" FontAttributes="Bold" />
-            <Picker ItemsSource="{Binding SortOptions}" SelectedItem="{Binding SelectedSortOption}" />
+            <Label Text="▶ SONG THINGY" FontAttributes="Bold" FontSize="20" TextColor="Black"/>
+
+            <!-- Navigation options -->
+            <Frame Padding="10,5" BackgroundColor="#F6EFF8" HasShadow="False" BorderColor="Transparent">
+                <Label Text="Playlists" FontAttributes="Bold" TextColor="Black">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SetViewCommand}" CommandParameter="Playlists"/>
+                    </Label.GestureRecognizers>
+                </Label>
+            </Frame>
+
+            <Frame Padding="10,5" BackgroundColor="#F6EFF8" HasShadow="False" BorderColor="Transparent">
+                <Label Text="Songs" FontAttributes="Bold" TextColor="Black">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SetViewCommand}" CommandParameter="Songs"/>
+                    </Label.GestureRecognizers>
+                </Label>
+            </Frame>
+
+            <!-- Genre filter -->
+            <StackLayout IsVisible="{Binding ShowGenreFilter}">
+                <Label Text="Genre" FontAttributes="Bold" TextColor="Black"/>
+                <Picker ItemsSource="{Binding SongListViewModel.GenreList}" 
+                        SelectedItem="{Binding SongListViewModel.SelectedGenre}" 
+                        TextColor="Black"/>
+            </StackLayout>
+
+            <!-- Sorting options -->
+            <Label Text="Sort" FontAttributes="Bold" TextColor="Black"/>
+            <Picker ItemsSource="{Binding CurrentSortOptions}" 
+                    SelectedItem="{Binding CurrentSelectedSortOption}"
+                    TextColor="Black"/>
         </StackLayout>
 
-        <!-- Top Bar -->
-        <Grid Grid.Column="1" Padding="20" VerticalOptions="Start">
-            <Label Text="Songs"
+        <!-- Title -->
+        <Grid Grid.Column="1" Padding="20" VerticalOptions="Start" ColumnDefinitions="*,Auto">
+            <Label Text="{Binding CurrentTitle}"
                    FontSize="32"
                    FontAttributes="Bold"
-                   HorizontalOptions="Start" />
+                   HorizontalOptions="Center"
+                   TextColor="Black"/>
         </Grid>
 
-        <!-- Main Content -->
-        <StackLayout Grid.Row="1" Grid.Column="1" Padding="20" Spacing="20">
+        <!-- Main Content Area -->
+        <ContentView Grid.Row="1" Grid.Column="1" Padding="20">
+            <ContentView.Triggers>
+                <DataTrigger TargetType="ContentView"
+                             Binding="{Binding ContentType}"
+                             Value="Songs">
+                    <Setter Property="Content">
+                        <Setter.Value>
+                            <Grid RowDefinitions="Auto,*">
+                                <!-- Songs -->
+                                <Grid ColumnDefinitions="*,Auto,Auto" VerticalOptions="Start" Padding="0,0,0,10">
+                                    <Frame Grid.Column="0"
+                                           Padding="10"
+                                           BackgroundColor="#F6EFF8"
+                                           CornerRadius="20"
+                                           HasShadow="False">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <Entry Text="{Binding SongListViewModel.SearchText, Mode=TwoWay}"
+                                                   Placeholder="Search for a song"
+                                                   BackgroundColor="Transparent"
+                                                   FontSize="16" 
+                                                   TextColor="Black"/>
+                                        </Grid>
+                                    </Frame>
 
-            <!-- Search & Add -->
-            <Grid ColumnDefinitions="*,Auto,Auto" VerticalOptions="Start" Padding="0,0,0,10">
-                <Frame Grid.Column="0"
-                       Padding="10"
-                       BackgroundColor="#F6EFF8"
-                       CornerRadius="20"
-                       HasShadow="False">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <Entry Text="{Binding SearchText, Mode=TwoWay}"
-                               Placeholder="Search for a song"
-                               BackgroundColor="Transparent"
-                               FontSize="16" />
-                    </Grid>
-                </Frame>
+                                    <ImageButton Grid.Column="1"
+                                                 Source="refresh.png"
+                                                 Margin="10,0"
+                                                 WidthRequest="32" HeightRequest="32"
+                                                 Command="{Binding SongListViewModel.LoadSongsCommand}"/>
 
-                <ImageButton Grid.Column="1"
-                             Source="refresh.png"
-                             Margin="10,0"
-                             WidthRequest="32" HeightRequest="32"
-                             Command="{Binding LoadSongsCommand}"/>
-
-                <Button Grid.Column="2"
-                        Text="Add song"
-                        BackgroundColor="Black"
-                        TextColor="White"
-                        CornerRadius="8"
-                        Padding="10,5"
-                        FontSize="14"
-                        Margin="10,0"
-                        Command="{Binding AddSongPopupCommand}"/>
-            </Grid>
-
-            <!-- Song Grid -->
-            <CollectionView ItemsSource="{Binding Songs}"
-                            SelectedItem="{Binding SelectedSong}"
-                            SelectionMode="Single">
-                <CollectionView.ItemsLayout>
-                    <GridItemsLayout Orientation="Vertical"
-                                     Span="3"
-                                     HorizontalItemSpacing="15"
-                                     VerticalItemSpacing="15"/>
-                </CollectionView.ItemsLayout>
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Frame CornerRadius="16" HasShadow="True" Padding="0" Margin="4" BackgroundColor="White">
-                            <Grid RowDefinitions="Auto,Auto,*" Padding="10">
-                                <Image Source="{Binding SongUrl, TargetNullValue='song_placeholder.png'}"
-                                       HeightRequest="140"
-                                       Aspect="AspectFill"
-                                       HorizontalOptions="Fill"
-                                       VerticalOptions="Start"
-                                       Margin="0,0,0,10"
-                                       Grid.Row="0" />
-
-                                <Label Text="{Binding Name}"
-                                       FontAttributes="Bold"
-                                       FontSize="16"
-                                       Grid.Row="1"
-                                       TextColor="Black"
-                                       LineBreakMode="TailTruncation" />
-
-                                <StackLayout Orientation="Horizontal"
-                                             Grid.Row="2"
-                                             HorizontalOptions="Start"
-                                             Spacing="10">
-                                    <Label Text="{Binding Genre}"
-                                           FontSize="13"
-                                           TextColor="Gray" />
-                                    <Label Text="{Binding DurationInSeconds}"
-                                           FontSize="13"
-                                           TextColor="Gray" />
-                                </StackLayout>
+                                    <Button Grid.Column="2"
+                                            Text="Add song"
+                                            BackgroundColor="Black"
+                                            TextColor="White"
+                                            CornerRadius="8"
+                                            Padding="10,5"
+                                            FontSize="14"
+                                            Margin="10,0"
+                                            Command="{Binding SongListViewModel.AddSongPopupCommand}"/>
+                                </Grid>
+                                
+                                <CollectionView Grid.Row="1" 
+                                                ItemsSource="{Binding SongListViewModel.Songs}">
+                                    <CollectionView.ItemsLayout>
+                                        <GridItemsLayout Orientation="Vertical" 
+                                                         Span="4" 
+                                                         HorizontalItemSpacing="10" 
+                                                         VerticalItemSpacing="10"/>
+                                    </CollectionView.ItemsLayout>
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <views:SongListView />
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
                             </Grid>
-                        </Frame>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </StackLayout>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+                <DataTrigger TargetType="ContentView"
+                             Binding="{Binding ContentType}"
+                             Value="Playlists">
+                    <Setter Property="Content">
+                        <Setter.Value>
+                            <Grid RowDefinitions="Auto,*">
+                                <!-- Playlists -->
+                                <Grid ColumnDefinitions="*,Auto,Auto" VerticalOptions="Start" Padding="0,0,0,10">
+                                    <Frame Grid.Column="0"
+                                           Padding="10"
+                                           BackgroundColor="#F6EFF8"
+                                           CornerRadius="20"
+                                           HasShadow="False">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <Entry Text="{Binding PlaylistListViewModel.SearchText, Mode=TwoWay}"
+                                                   Placeholder="Search for a playlist"
+                                                   BackgroundColor="Transparent"
+                                                   FontSize="16" 
+                                                   TextColor="Black"/>
+                                        </Grid>
+                                    </Frame>
+
+                                    <ImageButton Grid.Column="1"
+                                                 Source="refresh.png"
+                                                 Margin="10,0"
+                                                 WidthRequest="32" HeightRequest="32"/>
+
+                                    <Button Grid.Column="2"
+                                            Text="Add playlist"
+                                            BackgroundColor="Black"
+                                            TextColor="White"
+                                            CornerRadius="8"
+                                            Padding="10,5"
+                                            FontSize="14"
+                                            Margin="10,0"/>
+                                </Grid>
+                                
+                                <CollectionView Grid.Row="1" 
+                                               ItemsSource="{Binding PlaylistListViewModel.Playlists}">
+                                    <CollectionView.ItemsLayout>
+                                        <GridItemsLayout Orientation="Vertical" 
+                                                         Span="4" 
+                                                         HorizontalItemSpacing="10" 
+                                                         VerticalItemSpacing="10"/>
+                                    </CollectionView.ItemsLayout>
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <views:PlaylistListView />
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+                            </Grid>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+            </ContentView.Triggers>
+        </ContentView>
     </Grid>
 </ContentPage>

@@ -6,8 +6,6 @@ using ICSProject.MAUI.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using CommunityToolkit.Maui;
-using CommunityToolkit.Maui.Views;
-using ICSProject.MAUI.ViewModels;
 using ICSProject.MAUI.Views;
 
 namespace ICSProject.MAUI;
@@ -18,14 +16,12 @@ public static class MauiProgram
     {
         var builder = MauiApp.CreateBuilder();
         builder
-            .UseMauiApp<App>()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
         
-        // ✅ Register DbContext factory
         var dbPath = Path.Combine(FileSystem.AppDataDirectory, "icsproject.db");
         builder.Services.AddDbContextFactory<IcsDbContext>(options =>
             options.UseSqlite($"Data Source={dbPath}"));
@@ -33,21 +29,21 @@ public static class MauiProgram
         {
             var contextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<IcsDbContext>>();
             using var db = contextFactory.CreateDbContext();
-            db.Database.EnsureCreated(); // ✅ This creates the DB + tables if missing
+            db.Database.EnsureCreated();
         }
 
         builder.Services.AddSingleton<IUnitOfWorkFactory, UnitOfWorkFactory>();
         builder.Services.AddSingleton<SongModelMapper>();
         builder.Services.AddSingleton<SongFacade>();
-        builder.Services.AddTransient<SongListViewModel>();
+        builder.Services.AddSingleton<SongListViewModel>();
+        builder.Services.AddSingleton<PlaylistListViewModel>();
+        builder.Services.AddSingleton<MainViewModel>();
         builder.Services.AddTransient<MainPage>();
         builder
             .UseMauiApp<App>()
             .UseMauiCommunityToolkit();
-        builder.UseMauiCommunityToolkit();
         builder.Services.AddTransient<AddSongPopup>();
-        
-        builder.Services.AddTransient<SongDetailViewModel>();
+        builder.Services.AddTransient<ViewModels.SongDetailViewModel>();
 
 
 #if DEBUG
