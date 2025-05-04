@@ -270,7 +270,7 @@ public class PlaylistFacadeTests : FacadeTestBase
     public async Task GetSortedAsync_ByNameAscending()
     {
         //Act
-        var result = await _facadeSUT.GetSortedAsync(PlaylistSortOption.Name, true);
+        var result = await _facadeSUT.GetSortedAsync(SortOptions.PlaylistName, true);
         var resultList = result.ToList();
         
         //Assert
@@ -284,7 +284,7 @@ public class PlaylistFacadeTests : FacadeTestBase
     public async Task GetSortedAsync_ByNameDescending()
     {
         //Act
-        var result = await _facadeSUT.GetSortedAsync(PlaylistSortOption.Name, false);
+        var result = await _facadeSUT.GetSortedAsync(SortOptions.PlaylistName, false);
         var resultList = result.ToList();
         
         //Assert
@@ -298,7 +298,7 @@ public class PlaylistFacadeTests : FacadeTestBase
     public async Task GetSortedAsync_BySongCountAscending()
     {
         //Act
-        var result = await _facadeSUT.GetSortedAsync(PlaylistSortOption.SongCount, true);
+        var result = await _facadeSUT.GetSortedAsync(SortOptions.PlaylistSongCount, true);
         var resultList = result.ToList();
         
         //Assert
@@ -312,7 +312,7 @@ public class PlaylistFacadeTests : FacadeTestBase
     public async Task GetSortedAsync_BySongCountDescending()
     {
         //Act
-        var result = await _facadeSUT.GetSortedAsync(PlaylistSortOption.SongCount, false);
+        var result = await _facadeSUT.GetSortedAsync(SortOptions.PlaylistSongCount, false);
         var resultList = result.ToList();
         
         //Assert
@@ -326,7 +326,7 @@ public class PlaylistFacadeTests : FacadeTestBase
     public async Task GetSortedAsync_ByDurationAscending()
     {
         //Act
-        var result = await _facadeSUT.GetSortedAsync(PlaylistSortOption.Duration, true);
+        var result = await _facadeSUT.GetSortedAsync(SortOptions.PlaylistDuration, true);
         var resultList = result.ToList();
         
         //Assert
@@ -340,7 +340,7 @@ public class PlaylistFacadeTests : FacadeTestBase
     public async Task GetSortedAsync_ByDurationDescending()
     {
         //Act
-        var result = await _facadeSUT.GetSortedAsync(PlaylistSortOption.Duration, false);
+        var result = await _facadeSUT.GetSortedAsync(SortOptions.PlaylistDuration, false);
         var resultList = result.ToList();
         
         //Assert
@@ -354,7 +354,7 @@ public class PlaylistFacadeTests : FacadeTestBase
     public async Task GetSortedAsync_InvalidSortOption_Throws()
     {
         //Act & Assert
-        await Assert.ThrowsAnyAsync<ArgumentOutOfRangeException>(() => _facadeSUT.GetSortedAsync((PlaylistSortOption)100));
+        await Assert.ThrowsAnyAsync<ArgumentOutOfRangeException>(() => _facadeSUT.GetSortedAsync((SortOptions)100));
     }
     
     private static void FixIds(PlaylistDetailModel expectedModel, PlaylistDetailModel returnedModel)

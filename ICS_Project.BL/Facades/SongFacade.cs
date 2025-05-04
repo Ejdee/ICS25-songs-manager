@@ -39,7 +39,7 @@ public class SongFacade(IUnitOfWorkFactory unitOfWorkFactory, SongModelMapper mo
     }
     
     // Returns a sorted list of songs based on the provided sort option
-    public async Task<IEnumerable<SongListModel>> GetSortedAsync(SongSortOption sortOption, bool ascending = true)
+    public async Task<IEnumerable<SongListModel>> GetSortedAsync(SortOptions sortOption, bool ascending = true)
     {
         await using IUnitOfWork uow = UnitOfWorkFactory.Create();
         IRepository<SongEntity> repository = uow.GetRepository<SongEntity, SongEntityMapper>();
@@ -49,13 +49,13 @@ public class SongFacade(IUnitOfWorkFactory unitOfWorkFactory, SongModelMapper mo
         // Apply sorting
         switch (sortOption)
         {
-            case SongSortOption.Name:
+            case SortOptions.SongName:
                 query = ascending
                     ? query.OrderBy(s => s.Name)
                     : query.OrderByDescending(s => s.Name);
                 break;
 
-            case SongSortOption.Duration:
+            case SortOptions.SongDuration:
                 query = ascending
                     ? query.OrderBy(s => s.DurationInSeconds)
                     : query.OrderByDescending(s => s.DurationInSeconds);

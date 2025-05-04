@@ -130,7 +130,7 @@ public class SongFacadeTests : FacadeTestBase
     public async Task GetSortedAsync_ByNameAscending()
     {
         //Act
-        var songs = await _songFacadeSUT.GetSortedAsync(SongSortOption.Name, true);
+        var songs = await _songFacadeSUT.GetSortedAsync(SortOptions.SongName, true);
         var songList = songs.ToList();
         
         //Assert
@@ -144,7 +144,7 @@ public class SongFacadeTests : FacadeTestBase
     public async Task GetSortedAsync_ByNameDescending()
     {
         //Act
-        var songs = await _songFacadeSUT.GetSortedAsync(SongSortOption.Name, false);
+        var songs = await _songFacadeSUT.GetSortedAsync(SortOptions.SongName, false);
         var songList = songs.ToList();
         
         //Assert
@@ -158,7 +158,7 @@ public class SongFacadeTests : FacadeTestBase
     public async Task GetSortedAsync_ByDurationAscending()
     {
         //Act
-        var songs = await _songFacadeSUT.GetSortedAsync(SongSortOption.Duration, true);
+        var songs = await _songFacadeSUT.GetSortedAsync(SortOptions.SongDuration, true);
         var songList = songs.ToList();
         
         //Assert
@@ -172,7 +172,7 @@ public class SongFacadeTests : FacadeTestBase
     public async Task GetSortedAsync_ByDurationDescending()
     {
         //Act
-        var songs = await _songFacadeSUT.GetSortedAsync(SongSortOption.Duration, false);
+        var songs = await _songFacadeSUT.GetSortedAsync(SortOptions.SongDuration, false);
         var songList = songs.ToList();
         
         //Assert

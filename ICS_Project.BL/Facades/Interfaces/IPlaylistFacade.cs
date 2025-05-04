@@ -8,6 +8,6 @@ public interface IPlaylistFacade : IFacade<PlaylistEntity, PlaylistListModel, Pl
 {
     public Task<IEnumerable<PlaylistListModel>> SearchByNameAsync(string name);
 
-    public Task<IEnumerable<PlaylistListModel>> GetSortedAsync(PlaylistSortOption sortOption,
+    public Task<IEnumerable<PlaylistListModel>> GetSortedAsync(SortOptions sortOption,
         bool ascending = true);
 }
