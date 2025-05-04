@@ -4,6 +4,8 @@ using CommunityToolkit.Mvvm.Input;
 using ICS_Project.BL.Facades;
 using ICS_Project.BL.Models;
 
+namespace ICSProject.MAUI.ViewModels;
+
 public partial class SongDetailViewModel : ObservableObject
 {
     private readonly SongFacade _songFacade;
@@ -11,7 +13,7 @@ public partial class SongDetailViewModel : ObservableObject
     public event EventHandler? SongChanged;
 
     [ObservableProperty]
-    private SongDetailModel song;
+    private SongDetailModel _song = SongDetailModel.Empty;
 
     public SongDetailViewModel(SongFacade songFacade)
     {
@@ -21,25 +23,17 @@ public partial class SongDetailViewModel : ObservableObject
     [RelayCommand]
     private async Task SaveAsync()
     {
-        if (Song is null)
-        {
-            Debug.WriteLine("❌ Song is null when trying to save!");
-            return;
-        }
-        
         Debug.WriteLine($"✅ Saving song: {Song.Name}");
         await _songFacade.SaveAsync(Song);
-        SaveCompleted?.Invoke(this, EventArgs.Empty); // ✅ Let the view handle navigation
+        SaveCompleted?.Invoke(this, EventArgs.Empty); 
         SongChanged?.Invoke(this, EventArgs.Empty);
     }
 
     [RelayCommand]
     private async Task DeleteAsync()
     {
-        if (Song is null || Song.Id == Guid.Empty) return;
-
         await _songFacade.DeleteAsync(Song.Id);
-        SaveCompleted?.Invoke(this, EventArgs.Empty); // ✅ Let the view handle navigation
+        SaveCompleted?.Invoke(this, EventArgs.Empty); 
         SongChanged?.Invoke(this, EventArgs.Empty);
     }
 

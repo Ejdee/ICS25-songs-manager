@@ -4,7 +4,7 @@ namespace ICSProject.MAUI.Views;
 
 public partial class AddSongPopup : Popup
 {
-    public TaskCompletionSource<(string Name, string Genre, string Duration)> Result { get; } = new();
+    private new TaskCompletionSource<(string Name, string Author, string Genre, string SongUrl, string Duration)> Result { get; } = new();
 
     public AddSongPopup()
     {
@@ -13,13 +13,13 @@ public partial class AddSongPopup : Popup
 
     private void OnSaveClicked(object sender, EventArgs e)
     {
-        Result.SetResult((NameEntry.Text, GenreEntry.Text, DurationEntry.Text));
-        Close((NameEntry.Text,AuthorEntry.Text, GenreEntry.Text, DurationEntry.Text));
+        Result.SetResult((NameEntry.Text, AuthorEntry.Text, GenreEntry.Text, SongUrlEntry.Text, DurationEntry.Text));
+        Close((NameEntry.Text,AuthorEntry.Text, GenreEntry.Text, SongUrlEntry.Text, DurationEntry.Text));
     }
 
     private void OnCancelClicked(object sender, EventArgs e)
     {
-        Result.SetResult((null, null, null));
+        Result.SetResult((null, null, null, null, null)!);
         Close();
     }
 }

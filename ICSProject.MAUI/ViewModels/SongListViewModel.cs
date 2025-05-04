@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ICS_Project.BL.Facades;
 using ICS_Project.BL.Models;
-using System.Threading.Tasks;
 using ICS_Project.BL.Models.Enums;
 
 namespace ICSProject.MAUI.ViewModels;
@@ -11,35 +10,42 @@ namespace ICSProject.MAUI.ViewModels;
 public partial class SongListViewModel : ObservableObject
 {
     private readonly SongFacade _songFacade;
+    private List<SongListModel> _allSongs = new();
 
     public ObservableCollection<SongListModel> Songs { get; } = new();
     public ObservableCollection<string> GenreList { get; } = new() { "All", "Pop", "Rock", "Jazz", "Classical" }; // example genres
-    public ObservableCollection<SongSortOption> SortOptions { get; } = new()
+    public ObservableCollection<SortOptions> SongSortOptions { get; } = new()
     {
-        SongSortOption.Name,
-        SongSortOption.Duration
+        SortOptions.SongName,
+        SortOptions.SongDuration
     };
 
     [ObservableProperty]
-    private string selectedGenre = "All";
+    private string _selectedGenre = "All";
+
+    [ObservableProperty] 
+    private SortOptions _selectedSortOption = SortOptions.SongName;
 
     [ObservableProperty]
-    private SongSortOption selectedSortOption = SongSortOption.Name;
-
+    private SongListModel _selectedSong = SongListModel.Empty;
+    
+    [ObservableProperty]
+    private string _searchText = string.Empty;
 
     public IRelayCommand LoadSongsCommand { get; }
     public IRelayCommand AddSongPopupCommand { get; }
-    
+    public IAsyncRelayCommand<SongListModel> EditSongCommand { get; }
 
     public SongListViewModel(SongFacade songFacade)
     {
         _songFacade = songFacade;
 
-        LoadSongsCommand = new RelayCommand(async () => await LoadSongsAsync());
+        LoadSongsCommand = new RelayCommand(() => _ = ExecuteLoadSongsAsync());
         AddSongPopupCommand = new RelayCommand(() => AddSongRequested?.Invoke(this, EventArgs.Empty));
+        EditSongCommand = new AsyncRelayCommand<SongListModel>(NavigateToEditPage);
     }
 
-    public async Task AddSongAsync(string name, string author, string genre, int durationInSeconds)
+    public async Task AddSongAsync(string name, string author, string genre, string songUrl, int durationInSeconds)
     {
         var newSong = new SongDetailModel
         {
@@ -48,45 +54,56 @@ public partial class SongListViewModel : ObservableObject
             Description = "TBD",
             DurationInSeconds = TimeSpan.FromSeconds(durationInSeconds),
             Artist = author,
-            SongUrl = "song_placeholder.png"
+            SongUrl = songUrl
         };
+        
         if (!GenreList.Contains(genre))
         {
-            GenreList.Add(genre); // ✅ Add new genre dynamically
+            GenreList.Add(genre);
         }
 
         await _songFacade.SaveAsync(newSong);
         await LoadSongsAsync();
     }
-    [ObservableProperty]
-    private SongListModel selectedSong;
-    public event EventHandler<SongListModel>? SongSelected;
-    partial void OnSelectedSongChanged(SongListModel value)
+
+    public async Task LoadSongsAsync()
     {
-        if (value is not null)
+        _allSongs = (await _songFacade.GetAllAsync()).ToList();
+        await FilterAndSortSongsAsync();
+        
+        foreach (var song in _allSongs)
         {
-            // Raise an event or call navigation here
-            SelectSong(value);
-            SongSelected?.Invoke(this, value);
+            if (!GenreList.Contains(song.Genre))
+            {
+                GenreList.Add(song.Genre); 
+            }
         }
     }
- 
     
-    public event EventHandler<SongDetailModel>? NavigateToDetailRequested;
-
-    public async void SelectSong(SongListModel selected)
+    private async Task SelectSong(SongListModel selected)
     {
         var detail = await _songFacade.GetAsync(selected.Id);
+        
+        if (detail == null)
+        {
+            return;
+        }
+        
         NavigateToDetailRequested?.Invoke(this, detail);
     }
-    [ObservableProperty]
-    private string searchText;
 
-    partial void OnSearchTextChanged(string value)
+    private async Task ExecuteLoadSongsAsync()
     {
-        _ = FilterSongsAsync(value); // Fire-and-forget or handle errors if needed
+        try
+        {
+            await LoadSongsAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"ERROR - loading songs: {e.Message}");
+        }
     }
-
+    
     private async Task FilterSongsAsync(string query)
     {
         Songs.Clear();
@@ -98,31 +115,7 @@ public partial class SongListViewModel : ObservableObject
         foreach (var song in filtered)
             Songs.Add(song);
     }
-    partial void OnSelectedGenreChanged(string value)
-    {
-        _ = FilterAndSortSongsAsync();
-    }
-
-    partial void OnSelectedSortOptionChanged(SongSortOption value)
-    {
-        _ = FilterAndSortSongsAsync();
-    }
-
-    public async Task LoadSongsAsync()
-    {
-        _allSongs = (await _songFacade.GetAllAsync()).ToList();
-        await FilterAndSortSongsAsync();
-        foreach (var song in _allSongs)
-        {
-            if (!GenreList.Contains(song.Genre))
-            {
-                GenreList.Add(song.Genre); // ✅ Add new genre dynamically
-            }
-        }
-    }
     
-    private List<SongListModel> _allSongs = new();
-
     private Task FilterAndSortSongsAsync()
     {
         var filtered = _allSongs.AsEnumerable();
@@ -139,8 +132,8 @@ public partial class SongListViewModel : ObservableObject
 
         filtered = SelectedSortOption switch
         {
-            SongSortOption.Name => filtered.OrderBy(s => s.Name),
-            SongSortOption.Duration => filtered.OrderBy(s => s.DurationInSeconds),
+            SortOptions.SongName => filtered.OrderBy(s => s.Name),
+            SortOptions.SongDuration => filtered.OrderBy(s => s.DurationInSeconds),
             _ => filtered
         };
 
@@ -152,6 +145,48 @@ public partial class SongListViewModel : ObservableObject
 
         return Task.CompletedTask;
     }
+    
+    private async Task NavigateToEditPage(SongListModel? song)
+    {
+        if(song != null)
+        {
+            await SelectSong(song);
+        }
+    }
+
+    [RelayCommand]
+    private static async Task OpenSongUrlAsync(string url)
+    {
+        if (!string.IsNullOrEmpty(url))
+        {
+            await Launcher.OpenAsync(url);
+        }
+    } 
+    
+    partial void OnSelectedSongChanged(SongListModel value)
+    {
+        if (value.SongUrl == null)
+        {
+            return;
+        }
+        _ = OpenSongUrlAsync(value.SongUrl);
+    }
+
+    partial void OnSelectedGenreChanged(string value)
+    {
+        _ = FilterAndSortSongsAsync();
+    }
+
+    partial void OnSelectedSortOptionChanged(SortOptions value)
+    {
+        _ = FilterAndSortSongsAsync();
+    }
+    
+    partial void OnSearchTextChanged(string value)
+    {
+        _ = FilterSongsAsync(value);
+    }
 
     public event EventHandler? AddSongRequested;
+    public event EventHandler<SongDetailModel>? NavigateToDetailRequested;
 }

@@ -10,7 +10,7 @@ namespace ICSProject.MAUI.Views;
 
 public partial class SongDetailPage : ContentPage
 {
-    public SongDetailPage(SongDetailViewModel viewModel)
+    public SongDetailPage(ViewModels.SongDetailViewModel viewModel)
     {
         InitializeComponent();
         BindingContext = viewModel;
