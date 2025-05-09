@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:ICSProject.MAUI.ViewModels"
+             xmlns:models="clr-namespace:ICS_Project.BL.Models;assembly=ICS_Project.BL"
+             x:Class="ICSProject.MAUI.Views.PlaylistDetailPage"
+             x:DataType="viewmodels:PlaylistDetailViewModel"
+             BackgroundColor="White"
+             Title="Playlist Detail">
+
+    <Grid RowDefinitions="Auto,Auto,*" Padding="20">
+        <!-- Header Section -->
+        <StackLayout Spacing="10">
+            <Entry Text="{Binding Playlist.Name}" 
+                   Placeholder="Playlist Name" 
+                   FontSize="24" 
+                   FontAttributes="Bold"
+                   TextColor="Black"/>
+            <Editor Text="{Binding Playlist.Description}" 
+                    Placeholder="Description" 
+                    AutoSize="TextChanges"
+                    TextColor="Black"/>
+            <Label Text="{Binding Playlist.SongCount, StringFormat='Songs: {0}'}" 
+                   TextColor="Gray"/>
+            <Label Text="{Binding Playlist.DurationInSeconds, StringFormat='Duration: {0:hh\\:mm\\:ss}'}" 
+                   TextColor="Gray"/>
+        </StackLayout>
+
+        <!-- Buttons Section -->
+        <StackLayout Grid.Row="1" 
+                     Orientation="Horizontal" 
+                     Spacing="10" 
+                     Margin="0,10">
+            <Button Text="Save" 
+                    Command="{Binding SaveCommand}" 
+                    BackgroundColor="Black" 
+                    TextColor="White" 
+                    WidthRequest="100"/>
+            <Button Text="Delete" 
+                    Command="{Binding DeleteCommand}" 
+                    BackgroundColor="Red" 
+                    TextColor="White" 
+                    WidthRequest="100"/>
+            <Button Text="Add Song" 
+                    Command="{Binding AddSongToPlaylistCommand}" 
+                    BackgroundColor="Green" 
+                    TextColor="White" 
+                    WidthRequest="120"/>
+        </StackLayout>
+
+        <!-- Songs List -->
+        <CollectionView Grid.Row="2" 
+                        ItemsSource="{Binding SongsInPlaylist}" 
+                        Margin="0,10,0,0">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:SongDetailModel">
+                    <SwipeView>
+                        <SwipeView.RightItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Remove" 
+                                           BackgroundColor="Red"
+                                           Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:PlaylistDetailViewModel}}, Path=RemoveSongFromPlaylistCommand}"
+                                           CommandParameter="{Binding .}"/>
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+                        
+                        <Grid Padding="10" ColumnDefinitions="*,Auto">
+                            <StackLayout Grid.Column="0" Spacing="5">
+                                <Label Text="{Binding Name}" 
+                                       FontAttributes="Bold" 
+                                       TextColor="Black"/>
+                                <Label Text="{Binding Artist}" 
+                                       TextColor="Gray"/>
+                                <StackLayout Orientation="Horizontal" Spacing="10">
+                                    <Label Text="{Binding Genre}" 
+                                           TextColor="Gray"/>
+                                    <Label Text="{Binding DurationInSeconds, StringFormat='Duration: {0:mm\\:ss}'}"
+                                           TextColor="Gray"/>
+                                </StackLayout>
+                            </StackLayout>
+                        </Grid>
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            <CollectionView.EmptyView>
+                <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                    <Label Text="No songs in this playlist" FontSize="18" TextColor="Gray" HorizontalTextAlignment="Center"/>
+                    <Label Text="Add songs using the button above" TextColor="Gray" HorizontalTextAlignment="Center"/>
+                </StackLayout>
+            </CollectionView.EmptyView>
+        </CollectionView>
+    </Grid>
+</ContentPage>

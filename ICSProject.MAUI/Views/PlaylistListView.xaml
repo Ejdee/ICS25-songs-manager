@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:ICS_Project.BL.Models;assembly=ICS_Project.BL"
+             x:Class="ICSProject.MAUI.Views.PlaylistListView"
+             x:DataType="models:PlaylistListModel">
+    
+    <Frame CornerRadius="16" HasShadow="True" Padding="0" Margin="4" BackgroundColor="White">
+        <Grid RowDefinitions="Auto,Auto,*" ColumnDefinitions="*,Auto" Padding="10">
+            <Image Source="song_placeholder.png"
+                   HeightRequest="140"
+                   Aspect="AspectFill"
+                   HorizontalOptions="Fill"
+                   VerticalOptions="Start"
+                   Margin="0,0,0,10"
+                   Grid.Row="0"
+                   Grid.ColumnSpan="2" />
+
+            <Label Text="{Binding Name}"
+                   FontAttributes="Bold"
+                   FontSize="16"
+                   Grid.Row="1"
+                   Grid.Column="0"
+                   TextColor="Black"
+                   LineBreakMode="TailTruncation" />
+
+            <StackLayout Orientation="Horizontal"
+                         Grid.Row="2"
+                         Grid.Column="0"
+                         HorizontalOptions="Start"
+                         Spacing="10">
+                <Label Text="{Binding SongCount, StringFormat='Songs: {0}'}"
+                       FontSize="13"
+                       TextColor="Gray" />
+                <Label Text="{Binding DurationInSeconds, StringFormat='Duration: {0:mm\\:ss}'}"
+                       FontSize="13"
+                       TextColor="Gray" />
+            </StackLayout>
+
+            <ImageButton Grid.Row="1"
+                    Grid.Column="1"
+                    VerticalOptions="Center"
+                    HorizontalOptions="End"
+                    Clicked="OnEditButtonClicked"
+                    BackgroundColor="Transparent"
+                    Padding="5"
+                    Source="edit_icon.png"
+                    HeightRequest="24"
+                    WidthRequest="24" />
+        </Grid>
+    </Frame>
+</ContentView>

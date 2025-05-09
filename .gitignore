@@ -1,0 +1,41 @@
+# Visual Studio build artifacts
+**/bin/
+**/obj/
+.vs/
+*.user
+*.suo
+*.cache
+*.log
+*.pdb
+
+# SQLite database files
+project-manager.db
+*.db
+*.db-shm
+*.db-wal
+
+# Rider / JetBrains
+.idea/
+.vsconfig
+*.DotSettings.user
+
+# Dotnet specific
+*.dll
+*.exe
+*.bak
+
+# MAUI specific
+Resource.designer.cs
+
+# Temporary files
+*~
+*.tmp
+*.temp
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# NuGet packages
+packages/
+*.nupkg

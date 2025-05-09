@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<toolkit:Popup
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    x:Class="ICSProject.MAUI.Views.AddPlaylistPopup"
+    Size="300,400"
+    Color="Transparent">
+
+    <Border Stroke="Black" StrokeThickness="3" StrokeShape="RoundRectangle 12" Background="White" Padding="50">
+        <ScrollView>
+            <VerticalStackLayout Spacing="15">
+                <Label Text="Add New Playlist" 
+                       FontSize="20" 
+                       FontAttributes="Bold" 
+                       HorizontalOptions="Center"
+                       TextColor="Black"/>
+                <Entry x:Name="NameEntry" 
+                       Placeholder="Playlist Name" 
+                       TextColor="Black"/>
+                <Editor x:Name="DescriptionEntry" 
+                        Placeholder="Description" 
+                        HeightRequest="100" 
+                        AutoSize="TextChanges"
+                        TextColor="Black"/>
+                <Button Text="Save" 
+                        BackgroundColor="Black" 
+                        TextColor="White" 
+                        Clicked="OnSaveClicked" />
+                <Button Text="Cancel" 
+                        BackgroundColor="Gray" 
+                        TextColor="White" 
+                        Clicked="OnCancelClicked" />
+            </VerticalStackLayout>
+        </ScrollView>
+    </Border>
+</toolkit:Popup>
