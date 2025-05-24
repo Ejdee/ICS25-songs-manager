@@ -96,8 +96,7 @@ public partial class MainViewModel : ObservableObject
         }
         else
         {
-            //TODO:
-            //PlaylistListViewModel.SelectedSortOption = value;
+            PlaylistListViewModel.SelectedSortOption = value;
         }
     }
 }
