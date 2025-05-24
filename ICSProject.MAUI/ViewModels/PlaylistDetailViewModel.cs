@@ -217,6 +217,7 @@ private async Task AddSelectedSongToPlaylist(SongListModel selectedSong)
             if (playlistSong != null)
             {
                 await _playlistSongFacade.DeleteAsync(playlistSong.Id);
+                await ReloadPlaylistAsync();
                 
                 var updatedSongs = new List<PlaylistSongListModel>(
                     (Playlist.Songs ?? new ObservableCollection<PlaylistSongListModel>())
