@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:ICSProject.MAUI.ViewModels"
+             xmlns:models="clr-namespace:ICS_Project.BL.Models;assembly=ICS_Project.BL"
+             x:Class="ICSProject.MAUI.Views.SearchSongsPage"
+             x:DataType="viewmodels:SearchSongsViewModel"
+             Title="Search"
+             BackgroundColor="White">
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto" Padding="20">
+        
+        <!-- Title -->
+        <Label Grid.Row="0" 
+               Text="Search Songs" 
+               FontSize="24" 
+               FontAttributes="Bold" 
+               HorizontalOptions="Center"
+               Margin="0,0,0,20"
+               TextColor="Black"/>
+        
+        <!-- Search Box -->
+        <Frame Grid.Row="1" 
+               BackgroundColor="#F6EFF8" 
+               CornerRadius="20" 
+               Padding="15" 
+               Margin="0,0,0,15">
+            <Entry Text="{Binding SearchText}" 
+                   Placeholder="Type to search songs..."
+                   BackgroundColor="Transparent"
+                   FontSize="16"
+                   TextColor="Black"/>
+        </Frame>
+        
+        <!-- Live Results -->
+        <CollectionView Grid.Row="2" 
+                        ItemsSource="{Binding FilteredSongs}"
+                        BackgroundColor="Transparent">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:SongListModel">
+                    <Grid ColumnDefinitions="*,Auto" 
+                          Padding="15,10" 
+                          BackgroundColor="White"
+                          Margin="0,2">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:SearchSongsViewModel}}, Path=AddSongCommand}"
+                                                  CommandParameter="{Binding .}"/>
+                        </Grid.GestureRecognizers>
+                        
+                        <StackLayout Grid.Column="0">
+                            <Label Text="{Binding Name}" 
+                                   FontAttributes="Bold" 
+                                   FontSize="16"
+                                   TextColor="Black"/>
+                            <Label Text="{Binding Genre}" 
+                                   FontSize="12" 
+                                   TextColor="Gray"/>
+                            <Label Text="{Binding DurationInSeconds, StringFormat='{0:mm\\:ss}'}" 
+                                   FontSize="12" 
+                                   TextColor="Gray"/>
+                        </StackLayout>
+                        
+                        <Button Grid.Column="1" 
+                                Text="+" 
+                                BackgroundColor="Green"
+                                TextColor="White"
+                                WidthRequest="40"
+                                HeightRequest="40"
+                                CornerRadius="20"
+                                FontSize="20"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:SearchSongsViewModel}}, Path=AddSongCommand}"
+                                CommandParameter="{Binding .}"/>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            
+            <CollectionView.EmptyView>
+                <StackLayout HorizontalOptions="Center" 
+                             VerticalOptions="Center"
+                             Margin="40">
+                    <Label Text="{Binding EmptyMessage}" 
+                           FontSize="16" 
+                           TextColor="Gray" 
+                           HorizontalTextAlignment="Center"/>
+                </StackLayout>
+            </CollectionView.EmptyView>
+        </CollectionView>
+        
+        <!-- ~1~ Close Button @1@ -->
+        <!-- <Button Grid.Row="3"  -->
+        <!--         Text="Close"  -->
+        <!--         BackgroundColor="Gray" -->
+        <!--         TextColor="White" -->
+        <!--         Margin="0,15,0,0" -->
+        <!--         Padding="15" -->
+        <!--         CornerRadius="10" -->
+        <!--         Command="{Binding CloseCommand}"/> -->
+    </Grid>
+</ContentPage>

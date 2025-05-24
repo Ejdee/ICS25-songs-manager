@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ICS_Project.BL.Facades;
 using ICS_Project.BL.Models;
+using ICSProject.MAUI.Views;
 
 namespace ICSProject.MAUI.ViewModels;
 
@@ -125,87 +126,41 @@ public partial class PlaylistDetailViewModel : ObservableObject
     [RelayCommand]
     private async Task AddSongToPlaylistAsync()
     {
-        
-        try
-        {
-            var allSongs = await _songFacade.GetAsync();
-            
-            var songsInPlaylistIds = SongsInPlaylist.Select(s => s.Id).ToHashSet();
-            var availableSongs = allSongs.Where(s => !songsInPlaylistIds.Contains(s.Id)).ToList();
-            
-            if (availableSongs.Count == 0)
-            {
-                await Application.Current.MainPage.DisplayAlert("Info", "No more songs available to add", "OK");
-                return;
-            }
-            
-            var songNames = availableSongs.Select(s => s.Name).ToArray();
-            string result = await Application.Current.MainPage.DisplayActionSheet(
-                "Add song to playlist", 
-                "Cancel", 
-                null, 
-                songNames);
-            
-            if (result != "Cancel" && result != null)
-            {
-                var selectedSong = availableSongs.FirstOrDefault(s => s.Name == result);
-                if (selectedSong != null)
-                {
-                    var songDetail = await _songFacade.GetAsync(selectedSong.Id);
-                    if (songDetail == null)
-                    {
-                        await Application.Current.MainPage.DisplayAlert("Error", "Failed to get song details", "OK");
-                        return;
-                    }
-                    var playlistSong = new PlaylistSongListModel
-                    {
-                        Id = Guid.NewGuid(),
-                        SongId = songDetail.Id,
-                        SongName = songDetail.Name,
-                        SongDurationInSeconds = songDetail.DurationInSeconds
-                    };
-                    await _playlistSongFacade.SaveAsync(playlistSong, Playlist.Id);
-                    
-                    var updatedSongs = new List<PlaylistSongListModel>(Playlist.Songs);
-                    updatedSongs.Add(playlistSong);
-                    
-                    Playlist = new PlaylistDetailModel
-                    {
-                        Id = Playlist.Id,
-                        Name = Playlist.Name,
-                        Description = Playlist.Description,
-                        DurationInSeconds = Playlist.DurationInSeconds + songDetail.DurationInSeconds,
-                        SongCount = Playlist.SongCount + 1,
-                        Songs = new ObservableCollection<PlaylistSongListModel>(updatedSongs)
-                    };
-                    
-                    SongsInPlaylist.Add(songDetail);
-                    
-                    var playlistToUpdate = new PlaylistDetailModel
-                    {
-                        Id = Playlist.Id,
-                        Name = Playlist.Name,
-                        Description = Playlist.Description,
-                        DurationInSeconds = Playlist.DurationInSeconds + songDetail.DurationInSeconds,
-                        SongCount = Playlist.SongCount + 1
-                    };
-                    
-                    await _playlistFacade.SaveAsync(playlistToUpdate);
-                    
-                    OnPropertyChanged(nameof(Playlist));
-                    OnPropertyChanged(nameof(SongsInPlaylist));
-                    
-                    await ReloadPlaylistAsync();
-                    
-                    PlaylistChanged?.Invoke(this, EventArgs.Empty);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            await Application.Current.MainPage.DisplayAlert("Error", $"Failed to add song: {ex.Message}", "OK");
-        }
+        await ShowLiveSearchModal(); // Priamo otvorí live search modal
     }
+    
+private async Task AddSelectedSongToPlaylist(SongListModel selectedSong)
+{
+    try
+    {
+        var songDetail = await _songFacade.GetAsync(selectedSong.Id);
+        if (songDetail == null)
+        {
+            await Application.Current.MainPage.DisplayAlert("Error", "Failed to get song details", "OK");
+            return;
+        }
+
+        var playlistSong = new PlaylistSongListModel
+        {
+            Id = Guid.NewGuid(),
+            SongId = songDetail.Id,
+            SongName = songDetail.Name,
+            SongDurationInSeconds = songDetail.DurationInSeconds
+        };
+        
+        await _playlistSongFacade.SaveAsync(playlistSong, Playlist.Id);
+        await ReloadPlaylistAsync();
+        
+        PlaylistChanged?.Invoke(this, EventArgs.Empty);
+        
+       // await Application.Current.MainPage.DisplayAlert("Success", $"'{songDetail.Name}' added to playlist", "OK");
+    }
+    catch (Exception ex)
+    {
+        await Application.Current.MainPage.DisplayAlert("Error", $"Failed to add song to playlist: {ex.Message}", "OK");
+    }
+}
+
     private async Task ReloadPlaylistAsync()
     {
         var refreshedPlaylist = await _playlistFacade.GetAsync(Playlist.Id);
@@ -270,6 +225,37 @@ public partial class PlaylistDetailViewModel : ObservableObject
             {
                 await Application.Current.MainPage.DisplayAlert("Error", $"Failed to remove song from playlist: {ex.Message}", "OK");
             }
+        }
+    }
+    
+    
+    [RelayCommand]
+    private async Task ShowLiveSearchModal()
+    {
+        try
+        {
+            var songsInPlaylistIds = SongsInPlaylist.Select(s => s.Id);
+            var searchViewModel = new SearchSongsViewModel(_songFacade, Playlist.Id, songsInPlaylistIds);
+        
+            searchViewModel.SongSelected += async (sender, selectedSong) =>
+            {
+                await AddSelectedSongToPlaylist(selectedSong);
+                await Application.Current.MainPage.Navigation.PopAsync(); 
+            };
+    
+            searchViewModel.CloseRequested += async (sender, args) =>
+            {
+                await Application.Current.MainPage.Navigation.PopAsync(); 
+            };
+    
+            var modalPage = new SearchSongsPage(searchViewModel); 
+        
+            // Zmena na normálnu navigáciu
+            await Application.Current.MainPage.Navigation.PushAsync(modalPage);
+        }
+        catch (Exception ex)
+        {
+            await Application.Current.MainPage.DisplayAlert("Error", $"Failed to open search: {ex.Message}", "OK");
         }
     }
 }
