@@ -217,63 +217,59 @@ public partial class PlaylistDetailViewModel : ObservableObject
     }
     
     
-    // [RelayCommand]
-    // private async Task RemoveSongFromPlaylistAsync(SongDetailModel song)
-    // {
-    //     if (song == null) return;
-    //
-    //     bool confirm = await Application.Current.MainPage.DisplayAlert(
-    //         "Remove Song", 
-    //         $"Are you sure you want to remove '{song.Name}' from this playlist?", 
-    //         "Yes", "No");
-    //
-    //     if (confirm)
-    //     {
-    //         try
-    //         {
-    //             // Find the playlist song
-    //             var playlistSong = Playlist.Songs?.FirstOrDefault(ps => ps.SongId == song.Id);
-    //             if (playlistSong != null)
-    //             {
-    //                 // Smazat vazbu pomocí PlaylistSongFacade
-    //                 await _playlistSongFacade.DeleteAsync(playlistSong.Id);
-    //                 
-    //                 // Vytvoříme aktualizovanou kolekci Songs bez odebraného songu
-    //                 var updatedSongs = new List<PlaylistSongListModel>(Playlist.Songs.Where(s => s.Id != playlistSong.Id));
-    //                 
-    //                 // Aktualizujeme Playlist s novou kolekcí
-    //                 Playlist = new PlaylistDetailModel
-    //                 {
-    //                     Id = Playlist.Id,
-    //                     Name = Playlist.Name,
-    //                     Description = Playlist.Description,
-    //                     DurationInSeconds = Playlist.DurationInSeconds,
-    //                     SongCount = Playlist.SongCount - 1,
-    //                     Songs = new ObservableCollection<PlaylistSongListModel>(updatedSongs)
-    //                 };
-    //                 
-    //                 // Aktualizovat UI kolekci
-    //                 SongsInPlaylist.Remove(song);
-    //                 
-    //                 // Aktualizovat playlist (bez Songs kolekce)
-    //                 var playlistToUpdate = new PlaylistDetailModel
-    //                 {
-    //                     Id = Playlist.Id,
-    //                     Name = Playlist.Name,
-    //                     Description = Playlist.Description,
-    //                     DurationInSeconds = Playlist.DurationInSeconds,
-    //                     SongCount = Playlist.SongCount
-    //                 };
-    //                 
-    //                 await _playlistFacade.SaveAsync(playlistToUpdate);
-    //                 
-    //                 PlaylistChanged?.Invoke(this, EventArgs.Empty);
-    //             }
-    //         }
-    //         catch (Exception ex)
-    //         {
-    //             await Application.Current.MainPage.DisplayAlert("Error", $"Failed to remove song from playlist: {ex.Message}", "OK");
-    //         }
-    //     }
-    // }
+    [RelayCommand]
+    private async Task RemoveSongFromPlaylistAsync(SongDetailModel song)
+    {
+        if (song == null) return;
+    
+        bool confirm = await Application.Current.MainPage.DisplayAlert(
+            "Remove Song", 
+            $"Are you sure you want to remove '{song.Name}' from this playlist?", 
+            "Yes", "No");
+    
+        if (confirm)
+        {
+            try
+            {
+                // Find the playlist song
+                var playlistSong = Playlist.Songs?.FirstOrDefault(ps => ps.SongId == song.Id);
+                if (playlistSong != null)
+                {
+                    await _playlistSongFacade.DeleteAsync(playlistSong.Id);
+                    
+                    var updatedSongs = new List<PlaylistSongListModel>(Playlist.Songs.Where(s => s.Id != playlistSong.Id));
+                    
+                    // Update the playlist with the removed song
+                    Playlist = new PlaylistDetailModel
+                    {
+                        Id = Playlist.Id,
+                        Name = Playlist.Name,
+                        Description = Playlist.Description,
+                        DurationInSeconds = Playlist.DurationInSeconds,
+                        SongCount = Playlist.SongCount - 1,
+                        Songs = new ObservableCollection<PlaylistSongListModel>(updatedSongs)
+                    };
+                    
+                    SongsInPlaylist.Remove(song);
+                    
+                    var playlistToUpdate = new PlaylistDetailModel
+                    {
+                        Id = Playlist.Id,
+                        Name = Playlist.Name,
+                        Description = Playlist.Description,
+                        DurationInSeconds = Playlist.DurationInSeconds,
+                        SongCount = Playlist.SongCount
+                    };
+                    
+                    await _playlistFacade.SaveAsync(playlistToUpdate);
+                    
+                    PlaylistChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            catch (Exception ex)
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", $"Failed to remove song from playlist: {ex.Message}", "OK");
+            }
+        }
+    }
 }

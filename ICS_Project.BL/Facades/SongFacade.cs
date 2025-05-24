@@ -80,4 +80,25 @@ public class SongFacade(IUnitOfWorkFactory unitOfWorkFactory, SongModelMapper mo
     {
         return await base.SaveAsync(model);
     }
+    
+    public new async Task DeleteAsync(Guid id)
+    {
+        await using IUnitOfWork uow = UnitOfWorkFactory.Create();
+        var playlistSongRepo = uow.GetRepository<PlaylistSongEntity, PlaylistSongEntityMapper>();
+        
+        var links = await playlistSongRepo
+            .GetAll()
+            .Where(ps => ps.SongId == id)
+            .ToListAsync();
+
+        foreach (var link in links)
+        {
+            await playlistSongRepo.DeleteAsync(link.Id);
+        }
+
+        var songRepo = uow.GetRepository<SongEntity, SongEntityMapper>();
+        await songRepo.DeleteAsync(id);
+
+        await uow.CommitAsync();
+    }
 }
