@@ -63,6 +63,8 @@ public partial class PlaylistDetailViewModel : ObservableObject
             }
         }
         OnPropertyChanged(nameof(SongsInPlaylist));
+        
+        ApplySongFilter();
     }
 
 
@@ -269,6 +271,41 @@ public partial class PlaylistDetailViewModel : ObservableObject
             catch (Exception ex)
             {
                 await Application.Current.MainPage.DisplayAlert("Error", $"Failed to remove song from playlist: {ex.Message}", "OK");
+            }
+        }
+    }
+    
+    [ObservableProperty]
+    private string _songSearchText = string.Empty;
+
+    [ObservableProperty]
+    private ObservableCollection<SongDetailModel> _filteredSongsInPlaylist = new();
+
+    partial void OnSongSearchTextChanged(string value)
+    {
+        ApplySongFilter();
+    }
+
+    private void ApplySongFilter()
+    {
+        if (string.IsNullOrWhiteSpace(SongSearchText))
+        {
+            FilteredSongsInPlaylist.Clear();
+            foreach (var song in SongsInPlaylist)
+            {
+                FilteredSongsInPlaylist.Add(song);
+            }
+        }
+        else
+        {
+            var filtered = SongsInPlaylist
+                .Where(s => s.Name.Contains(SongSearchText, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            FilteredSongsInPlaylist.Clear();
+            foreach (var song in filtered)
+            {
+                FilteredSongsInPlaylist.Add(song);
             }
         }
     }
