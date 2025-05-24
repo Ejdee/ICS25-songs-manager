@@ -56,7 +56,7 @@ public partial class PlaylistListViewModel : ObservableObject
             }
             else
             {
-                playlists = await _playlistFacade.GetSortedAsync(_selectedSortOption);
+                playlists = await _playlistFacade.GetSortedAsync(SelectedSortOption);
             }
             
             Playlists.Clear();

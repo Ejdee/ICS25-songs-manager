@@ -90,7 +90,14 @@ public partial class PlaylistDetailViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            await Application.Current.MainPage.DisplayAlert("Error", $"Failed to save playlist: {ex.Message}", "OK");
+            if (Application.Current?.MainPage != null)
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", $"Failed to save playlist: {ex.Message}", "OK");
+            }
+            else
+            {
+                Console.WriteLine($"Failed to save playlist: {ex.Message}");
+            }
         }
     }
 
@@ -100,7 +107,10 @@ public partial class PlaylistDetailViewModel : ObservableObject
     {
         try
         {
-            bool confirm = await Application.Current.MainPage.DisplayAlert(
+            var mainPage = Application.Current?.MainPage;
+            if (mainPage == null) return;
+
+            bool confirm = await mainPage.DisplayAlert(
                 "Delete Playlist", 
                 $"Are you sure you want to delete '{Playlist.Name}'?", 
                 "Yes", "No");
@@ -115,7 +125,10 @@ public partial class PlaylistDetailViewModel : ObservableObject
                 }
                 catch (Exception ex)
                 {
-                    await Application.Current.MainPage.DisplayAlert("Error", $"Failed to delete playlist: {ex.Message}", "OK");
+                    if (Application.Current?.MainPage != null)
+                    {
+                        await Application.Current.MainPage.DisplayAlert("Error", $"Failed to delete playlist: {ex.Message}", "OK");
+                    }
                 }
             }
         }
@@ -128,7 +141,7 @@ public partial class PlaylistDetailViewModel : ObservableObject
     [RelayCommand]
     private async Task AddSongToPlaylistAsync()
     {
-        await ShowLiveSearchModal(); // Priamo otvorí live search modal
+        await ShowSongSearchAsync();
     }
     
 private async Task AddSelectedSongToPlaylist(SongListModel selectedSong)
@@ -138,7 +151,10 @@ private async Task AddSelectedSongToPlaylist(SongListModel selectedSong)
         var songDetail = await _songFacade.GetAsync(selectedSong.Id);
         if (songDetail == null)
         {
-            await Application.Current.MainPage.DisplayAlert("Error", "Failed to get song details", "OK");
+            if (Application.Current?.MainPage != null)
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", "Failed to get song details", "OK");
+            }
             return;
         }
 
@@ -155,11 +171,17 @@ private async Task AddSelectedSongToPlaylist(SongListModel selectedSong)
         
         PlaylistChanged?.Invoke(this, EventArgs.Empty);
         
-       // await Application.Current.MainPage.DisplayAlert("Success", $"'{songDetail.Name}' added to playlist", "OK");
     }
     catch (Exception ex)
     {
-        await Application.Current.MainPage.DisplayAlert("Error", $"Failed to add song to playlist: {ex.Message}", "OK");
+        if (Application.Current?.MainPage != null)
+        {
+            await Application.Current.MainPage.DisplayAlert("Error", $"Failed to add song to playlist: {ex.Message}", "OK");
+        }
+        else
+        {
+            Console.WriteLine($"Failed to add song to playlist: {ex.Message}");
+        }
     }
 }
 
@@ -176,59 +198,66 @@ private async Task AddSelectedSongToPlaylist(SongListModel selectedSong)
     
     [RelayCommand]
     private async Task RemoveSongFromPlaylistAsync(SongDetailModel song)
+{
+    if (song == null) return;
+
+    var mainPage = Application.Current?.MainPage;
+    if (mainPage == null) return;
+
+    bool confirm = await mainPage.DisplayAlert(
+        "Remove Song", 
+        $"Are you sure you want to remove '{song.Name}' from this playlist?", 
+        "Yes", "No");
+
+    if (confirm)
     {
-        if (song == null) return;
-    
-        bool confirm = await Application.Current.MainPage.DisplayAlert(
-            "Remove Song", 
-            $"Are you sure you want to remove '{song.Name}' from this playlist?", 
-            "Yes", "No");
-    
-        if (confirm)
+        try
         {
-            try
+            var playlistSong = Playlist.Songs?.FirstOrDefault(ps => ps.SongId == song.Id);
+            if (playlistSong != null)
             {
-                // Find the playlist song
-                var playlistSong = Playlist.Songs?.FirstOrDefault(ps => ps.SongId == song.Id);
-                if (playlistSong != null)
+                await _playlistSongFacade.DeleteAsync(playlistSong.Id);
+                
+                var updatedSongs = new List<PlaylistSongListModel>(
+                    (Playlist.Songs ?? new ObservableCollection<PlaylistSongListModel>())
+                    .Where(s => s.Id != playlistSong.Id)
+                );
+                
+                Playlist = new PlaylistDetailModel
                 {
-                    await _playlistSongFacade.DeleteAsync(playlistSong.Id);
-                    
-                    var updatedSongs = new List<PlaylistSongListModel>(Playlist.Songs.Where(s => s.Id != playlistSong.Id));
-                    
-                    // Update the playlist with the removed song
-                    Playlist = new PlaylistDetailModel
-                    {
-                        Id = Playlist.Id,
-                        Name = Playlist.Name,
-                        Description = Playlist.Description,
-                        DurationInSeconds = Playlist.DurationInSeconds,
-                        SongCount = Playlist.SongCount - 1,
-                        Songs = new ObservableCollection<PlaylistSongListModel>(updatedSongs)
-                    };
-                    
-                    SongsInPlaylist.Remove(song);
-                    
-                    var playlistToUpdate = new PlaylistDetailModel
-                    {
-                        Id = Playlist.Id,
-                        Name = Playlist.Name,
-                        Description = Playlist.Description,
-                        DurationInSeconds = Playlist.DurationInSeconds,
-                        SongCount = Playlist.SongCount
-                    };
-                    
-                    await _playlistFacade.SaveAsync(playlistToUpdate);
-                    
-                    PlaylistChanged?.Invoke(this, EventArgs.Empty);
-                }
+                    Id = Playlist.Id,
+                    Name = Playlist.Name,
+                    Description = Playlist.Description,
+                    DurationInSeconds = Playlist.DurationInSeconds,
+                    SongCount = Playlist.SongCount - 1,
+                    Songs = new ObservableCollection<PlaylistSongListModel>(updatedSongs)
+                };
+                
+                SongsInPlaylist.Remove(song);
+                
+                var playlistToUpdate = new PlaylistDetailModel
+                {
+                    Id = Playlist.Id,
+                    Name = Playlist.Name,
+                    Description = Playlist.Description,
+                    DurationInSeconds = Playlist.DurationInSeconds,
+                    SongCount = Playlist.SongCount
+                };
+                
+                await _playlistFacade.SaveAsync(playlistToUpdate);
+                
+                PlaylistChanged?.Invoke(this, EventArgs.Empty);
             }
-            catch (Exception ex)
+        }
+        catch (Exception ex)
+        {
+            if (Application.Current?.MainPage != null)
             {
                 await Application.Current.MainPage.DisplayAlert("Error", $"Failed to remove song from playlist: {ex.Message}", "OK");
             }
         }
     }
+}
     [ObservableProperty]
     private string _songSearchText = string.Empty;
 
@@ -265,7 +294,7 @@ private async Task AddSelectedSongToPlaylist(SongListModel selectedSong)
     }
         
     [RelayCommand]
-    private async Task ShowLiveSearchModal()
+    private async Task ShowSongSearchAsync()
     {
         try
         {
@@ -275,22 +304,38 @@ private async Task AddSelectedSongToPlaylist(SongListModel selectedSong)
             searchViewModel.SongSelected += async (sender, selectedSong) =>
             {
                 await AddSelectedSongToPlaylist(selectedSong);
-                await Application.Current.MainPage.Navigation.PopAsync(); 
+                if (Application.Current?.MainPage?.Navigation != null)
+                {
+                    await Application.Current.MainPage.Navigation.PopAsync();
+                }
             };
     
             searchViewModel.CloseRequested += async (sender, args) =>
             {
-                await Application.Current.MainPage.Navigation.PopAsync(); 
+                if (Application.Current?.MainPage?.Navigation != null)
+                {
+                    await Application.Current.MainPage.Navigation.PopAsync();
+                }
             };
     
             var modalPage = new SearchSongsPage(searchViewModel); 
         
-            // Zmena na normálnu navigáciu
-            await Application.Current.MainPage.Navigation.PushAsync(modalPage);
+            if (Application.Current?.MainPage?.Navigation != null)
+            {
+                await Application.Current.MainPage.Navigation.PushAsync(modalPage);
+            }
+            
         }
         catch (Exception ex)
         {
-            await Application.Current.MainPage.DisplayAlert("Error", $"Failed to open search: {ex.Message}", "OK");
+            if (Application.Current?.MainPage != null)
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", $"Failed to open search: {ex.Message}", "OK");
+            }
+            else
+            {
+                Console.WriteLine($"Failed to open search: {ex.Message}");
+            }
         }
     }
 }

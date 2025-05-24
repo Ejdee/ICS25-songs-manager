@@ -77,7 +77,7 @@ public partial class MainPage : ContentPage
         }
         
         var vm = _serviceProvider.GetRequiredService<PlaylistDetailViewModel>();
-        vm.Load(playlist);
+        await vm.Load(playlist);
 
         var detailPage = new PlaylistDetailPage(vm);
         vm.PlaylistChanged += async (_, __) => await _viewModel.PlaylistListViewModel.LoadPlaylistsAsync();
