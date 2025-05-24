@@ -77,7 +77,7 @@ public partial class PlaylistListViewModel : ObservableObject
         {
             Id = Guid.NewGuid(),
             Name = name,
-            Description = description,
+            Description = description ?? string.Empty,
             DurationInSeconds = TimeSpan.Zero,
             SongCount = 0
         };

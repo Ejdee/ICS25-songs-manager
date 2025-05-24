@@ -64,6 +64,8 @@ public partial class PlaylistDetailViewModel : ObservableObject
             }
         }
         OnPropertyChanged(nameof(SongsInPlaylist));
+        
+        ApplySongFilter();
     }
 
 
@@ -227,8 +229,41 @@ private async Task AddSelectedSongToPlaylist(SongListModel selectedSong)
             }
         }
     }
-    
-    
+    [ObservableProperty]
+    private string _songSearchText = string.Empty;
+
+    [ObservableProperty]
+    private ObservableCollection<SongDetailModel> _filteredSongsInPlaylist = new();
+
+    partial void OnSongSearchTextChanged(string value)
+    {
+        ApplySongFilter();
+    }
+
+    private void ApplySongFilter()
+    {
+        if (string.IsNullOrWhiteSpace(SongSearchText))
+        {
+            FilteredSongsInPlaylist.Clear();
+            foreach (var song in SongsInPlaylist)
+            {
+                FilteredSongsInPlaylist.Add(song);
+            }
+        }
+        else
+        {
+            var filtered = SongsInPlaylist
+                .Where(s => s.Name.Contains(SongSearchText, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            FilteredSongsInPlaylist.Clear();
+            foreach (var song in filtered)
+            {
+                FilteredSongsInPlaylist.Add(song);
+            }
+        }
+    }
+        
     [RelayCommand]
     private async Task ShowLiveSearchModal()
     {
