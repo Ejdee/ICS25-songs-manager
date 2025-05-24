@@ -23,6 +23,10 @@
                         HeightRequest="100" 
                         AutoSize="TextChanges"
                         TextColor="Black"/>
+                <Entry x:Name="ImageUrlEntry"
+                       Placeholder="Image URL"
+                       Keyboard="Url"
+                       TextColor="Black" />
                 <Button Text="Save" 
                         BackgroundColor="Black" 
                         TextColor="White" 

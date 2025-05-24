@@ -8,5 +8,6 @@ public class PlaylistEntityMapper : IEntityMapper<PlaylistEntity>
     {
         existingEntity.Name = newEntity.Name;
         existingEntity.Description = newEntity.Description;
+        existingEntity.ImageUrl = newEntity.ImageUrl;
     }
 }

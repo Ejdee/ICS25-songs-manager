@@ -80,6 +80,7 @@ public partial class PlaylistDetailViewModel : ObservableObject
                 Id = Playlist.Id,
                 Name = Playlist.Name,
                 Description = Playlist.Description,
+                ImageUrl = Playlist.ImageUrl,
                 DurationInSeconds = Playlist.DurationInSeconds,
                 SongCount = Playlist.SongCount
             };
