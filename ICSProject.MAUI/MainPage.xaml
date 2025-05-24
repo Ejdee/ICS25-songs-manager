@@ -147,7 +147,8 @@
                                             CornerRadius="8"
                                             Padding="10,5"
                                             FontSize="14"
-                                            Margin="10,0"/>
+                                            Margin="10,0"
+                                            Command="{Binding PlaylistListViewModel.AddPlaylistPopupCommand}"/>
                                 </Grid>
                                 
                                 <CollectionView Grid.Row="1" 

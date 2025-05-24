@@ -18,6 +18,8 @@ public partial class MainPage : ContentPage
         _serviceProvider = serviceProvider;
         _viewModel.SongListViewModel.NavigateToDetailRequested += OnNavigateToDetailRequested;
         _viewModel.SongListViewModel.AddSongRequested += OnAddSongRequested;
+        _viewModel.PlaylistListViewModel.NavigateToDetailRequested += OnNavigateToPlaylistDetailRequested;
+        _viewModel.PlaylistListViewModel.AddPlaylistRequested += OnAddPlaylistRequested;
     }
 
     private async void OnNavigateToDetailRequested(object? sender, SongDetailModel song)
@@ -48,4 +50,41 @@ public partial class MainPage : ContentPage
             }
         }
     }
+    
+    private async void OnAddPlaylistRequested(object? sender, EventArgs e)
+    {
+        var popup = new AddPlaylistPopup();
+        var result = await this.ShowPopupAsync(popup);
+
+        if (result is ValueTuple<string, string> values)
+        {
+            var (name, description) = values;
+
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                await _viewModel.PlaylistListViewModel.AddPlaylistAsync(name, description);
+                await _viewModel.PlaylistListViewModel.LoadPlaylistsAsync();
+            }
+        }
+    }
+    
+    private async void OnNavigateToPlaylistDetailRequested(object? sender, PlaylistDetailModel playlist)
+    {
+        if (playlist == null)
+        {
+            await Shell.Current.DisplayAlert("Error", "No playlist selected.", "OK");
+            return;
+        }
+        
+        var vm = _serviceProvider.GetRequiredService<PlaylistDetailViewModel>();
+        vm.Load(playlist);
+
+        var detailPage = new PlaylistDetailPage(vm);
+        vm.PlaylistChanged += async (_, __) => await _viewModel.PlaylistListViewModel.LoadPlaylistsAsync();
+        vm.SaveCompleted += async (_, __) => await Navigation.PopAsync();
+
+        await Navigation.PushAsync(detailPage);
+    }
+
+    
 }

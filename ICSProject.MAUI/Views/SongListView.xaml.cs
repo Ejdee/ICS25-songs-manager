@@ -1,5 +1,6 @@
 ﻿using ICS_Project.BL.Models;
 using ICSProject.MAUI.ViewModels;
+using CommunityToolkit.Maui.Views;
 
 namespace ICSProject.MAUI.Views;
 

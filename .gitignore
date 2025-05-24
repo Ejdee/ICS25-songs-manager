@@ -1,4 +1,4 @@
-# Visual Studio build
+# Visual Studio build artifacts
 **/bin/
 **/obj/
 .vs/
@@ -8,18 +8,34 @@
 *.log
 *.pdb
 
+# SQLite database files
 project-manager.db
+*.db
+*.db-shm
+*.db-wal
 
 # Rider / JetBrains
 .idea/
 .vsconfig
+*.DotSettings.user
 
 # Dotnet specific
 *.dll
 *.exe
-*.db
 *.bak
 
-# Ignore .NET build output folders
-[Oo]bj/
-[Bb]in/
+# MAUI specific
+Resource.designer.cs
+
+# Temporary files
+*~
+*.tmp
+*.temp
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# NuGet packages
+packages/
+*.nupkg

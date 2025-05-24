@@ -22,8 +22,11 @@ public class PlaylistFacade(IUnitOfWorkFactory unitOfWorkFactory, PlaylistModelM
     {
         await using IUnitOfWork uow = UnitOfWorkFactory.Create();
         IRepository<PlaylistEntity> repository = uow.GetRepository<PlaylistEntity, PlaylistEntityMapper>();
+        // added include to getting correct data
         var query = repository 
             .GetAll()
+            .Include(p => p.PlaylistSongs)
+            .ThenInclude(ps => ps.Song)
             .Where(p => p.Name.Contains(name));
         var entities = await query.ToListAsync();
         return entities.Select(e => ModelMapper.MapToListModel(e));
@@ -34,7 +37,10 @@ public class PlaylistFacade(IUnitOfWorkFactory unitOfWorkFactory, PlaylistModelM
         await using IUnitOfWork uow = UnitOfWorkFactory.Create();
         IRepository<PlaylistEntity> repository = uow.GetRepository<PlaylistEntity, PlaylistEntityMapper>();
 
-        IQueryable<PlaylistEntity> query = repository.GetAll();
+        // added include to getting correct data
+        IQueryable<PlaylistEntity> query = repository.GetAll()
+            .Include(p => p.PlaylistSongs)
+            .ThenInclude(ps => ps.Song);
 
         // Apply sorting 
         switch (sortOption)

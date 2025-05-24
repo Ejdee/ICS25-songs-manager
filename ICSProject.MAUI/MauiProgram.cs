@@ -21,7 +21,7 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
-        
+
         var dbPath = Path.Combine(FileSystem.AppDataDirectory, "icsproject.db");
         builder.Services.AddDbContextFactory<IcsDbContext>(options =>
             options.UseSqlite($"Data Source={dbPath}"));
@@ -44,6 +44,19 @@ public static class MauiProgram
             .UseMauiCommunityToolkit();
         builder.Services.AddTransient<AddSongPopup>();
         builder.Services.AddTransient<ViewModels.SongDetailViewModel>();
+
+
+        builder.Services.AddSingleton<PlaylistModelMapper>(); 
+        builder.Services.AddSingleton<PlaylistSongModelMapper>(); 
+
+        builder.Services.AddSingleton<PlaylistFacade>(); 
+        builder.Services.AddSingleton<PlaylistSongFacade>(); 
+
+        builder.Services.AddTransient<PlaylistDetailViewModel>(); 
+        builder.Services.AddTransient<PlaylistDetailPage>();
+        builder.Services.AddTransient<AddPlaylistPopup>();
+        
+        
 
 
 #if DEBUG

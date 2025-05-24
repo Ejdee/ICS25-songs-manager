@@ -25,6 +25,12 @@ public class PlaylistSongFacade(IUnitOfWorkFactory unitOfWorkFactory, PlaylistSo
             await repository.UpdateAsync(entity);
             await uow.CommitAsync();
         }
+        // todo ask teamates if it is ok
+        else
+        {
+            repository.Insert(entity);
+            await uow.CommitAsync();
+        }
     }
 
 
