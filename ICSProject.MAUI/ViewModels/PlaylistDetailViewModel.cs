@@ -21,6 +21,7 @@ public partial class PlaylistDetailViewModel : ObservableObject
     
     public event EventHandler? SaveCompleted;
     public event EventHandler? PlaylistChanged;
+    public event EventHandler<PlaylistDetailModel>? EditPlaylistRequested;
     
     public PlaylistDetailViewModel(
         PlaylistFacade playlistFacade, 
@@ -293,7 +294,13 @@ private async Task AddSelectedSongToPlaylist(SongListModel selectedSong)
             }
         }
     }
-        
+
+    [RelayCommand]
+    private void NavigateToEdit()
+    {
+        EditPlaylistRequested?.Invoke(this, Playlist);
+    }
+    
     [RelayCommand]
     private async Task ShowSongSearchAsync()
     {

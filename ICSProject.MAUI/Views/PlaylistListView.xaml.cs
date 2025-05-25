@@ -21,4 +21,16 @@ public partial class PlaylistListView : ContentView
             }
         }
     }
+
+    private void OnPlaylistTapped(object sender, EventArgs e)
+    {
+        if (BindingContext is PlaylistListModel playlist && Parent?.BindingContext is MainViewModel mainViewModel)
+        {
+            var viewModel = mainViewModel.PlaylistListViewModel;
+            if (viewModel?.ShowPlaylistCommand?.CanExecute(playlist) == true)
+            {
+                viewModel.ShowPlaylistCommand.Execute(playlist);
+            }
+        }
+    }
 }

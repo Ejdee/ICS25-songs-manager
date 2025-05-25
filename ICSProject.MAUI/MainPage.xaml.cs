@@ -19,6 +19,7 @@ public partial class MainPage : ContentPage
         _viewModel.SongListViewModel.NavigateToDetailRequested += OnNavigateToDetailRequested;
         _viewModel.SongListViewModel.AddSongRequested += OnAddSongRequested;
         _viewModel.PlaylistListViewModel.NavigateToDetailRequested += OnNavigateToPlaylistDetailRequested;
+        _viewModel.PlaylistListViewModel.NavigateToPlaylistSongsRequested += OnNavigateToPlaylistSongsRequested;
         _viewModel.PlaylistListViewModel.AddPlaylistRequested += OnAddPlaylistRequested;
     }
 
@@ -85,6 +86,15 @@ public partial class MainPage : ContentPage
 
         await Navigation.PushAsync(detailPage);
     }
-
     
+    private async void OnNavigateToPlaylistSongsRequested(object? sender, PlaylistDetailModel playlist)
+    {
+        var vm = _serviceProvider.GetRequiredService<PlaylistDetailViewModel>();
+        await vm.Load(playlist);
+
+        var songsPage = new PlaylistSongsPage(vm);
+        vm.PlaylistChanged += async (_, __) => await _viewModel.PlaylistListViewModel.LoadPlaylistsAsync();
+
+        await Navigation.PushAsync(songsPage);
+    }
 }

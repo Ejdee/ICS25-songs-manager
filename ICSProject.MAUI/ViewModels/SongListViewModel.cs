@@ -162,7 +162,7 @@ public partial class SongListViewModel : ObservableObject
             await Launcher.OpenAsync(url);
         }
     } 
-    
+
     partial void OnSelectedSongChanged(SongListModel value)
     {
         if (value.SongUrl == null)

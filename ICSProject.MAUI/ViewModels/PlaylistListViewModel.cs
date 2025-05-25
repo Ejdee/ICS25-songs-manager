@@ -28,10 +28,12 @@ public partial class PlaylistListViewModel : ObservableObject
 
     public IAsyncRelayCommand LoadPlaylistsCommand { get; }
     public IRelayCommand AddPlaylistPopupCommand { get; }
+    public IAsyncRelayCommand<PlaylistListModel> ShowPlaylistCommand { get; }
     public IAsyncRelayCommand<PlaylistListModel> EditPlaylistCommand { get; }
 
     public event EventHandler? AddPlaylistRequested;
     public event EventHandler<PlaylistDetailModel>? NavigateToDetailRequested;
+    public event EventHandler<PlaylistDetailModel>? NavigateToPlaylistSongsRequested;
 
     public PlaylistListViewModel(PlaylistFacade playlistFacade)
     {
@@ -40,6 +42,7 @@ public partial class PlaylistListViewModel : ObservableObject
         LoadPlaylistsCommand = new AsyncRelayCommand(LoadPlaylistsAsync);
         AddPlaylistPopupCommand = new RelayCommand(() => AddPlaylistRequested?.Invoke(this, EventArgs.Empty));
         EditPlaylistCommand = new AsyncRelayCommand<PlaylistListModel>(NavigateToEditPage);
+        ShowPlaylistCommand = new AsyncRelayCommand<PlaylistListModel>(NavigateToPlaylistSongsPage);
         
         _ = LoadPlaylistsAsync();
     }
@@ -111,6 +114,24 @@ public partial class PlaylistListViewModel : ObservableObject
         {
             await SelectPlaylist(playlist);
         }
+    }
+
+    private async Task NavigateToPlaylistSongsPage(PlaylistListModel? playlist)
+    {
+        if (playlist != null)
+        {
+            try
+            {
+                var detail = await _playlistFacade.GetAsync(playlist.Id);
+                if (detail != null)
+                {
+                    NavigateToPlaylistSongsRequested?.Invoke(this, detail);
+                }
+            } catch (Exception e)
+            {
+                Console.WriteLine($"ERROR - navigating to playlist songs: {e.Message}");
+            }
+        } 
     }
 
     partial void OnSearchTextChanged(string value)

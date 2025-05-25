@@ -1,6 +1,7 @@
 ﻿<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:models="clr-namespace:ICS_Project.BL.Models;assembly=ICS_Project.BL"
+             xmlns:views="using:ICSProject.MAUI.Views"
              x:Class="ICSProject.MAUI.Views.SongListView"
              x:DataType="models:SongDetailModel">
 
@@ -33,6 +34,7 @@
 
             <ImageButton Grid.Row="1"
                     Grid.Column="1"
+                    IsVisible="{Binding Source={RelativeSource AncestorType={x:Type views:SongListView}}, Path=ShowEditButton}"
                     VerticalOptions="Center"
                     HorizontalOptions="End"
                     Clicked="OnEditButtonClicked"
