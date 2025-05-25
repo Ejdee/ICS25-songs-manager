@@ -12,9 +12,25 @@
         <!-- Header Section -->
         <Grid ColumnDefinitions="Auto, *" Grid.Row="0" ColumnSpacing="20">
             <Frame Padding="0" CornerRadius="5" HasShadow="False" IsClippedToBounds="True"
-                   HeightRequest="200" WidthRequest="200" BackgroundColor="Transparent">
-                <Image Source="{Binding Playlist.ImageUrl}"
-                       Aspect="AspectFill"/>
+                   HeightRequest="200" WidthRequest="200" BackgroundColor="LightGray">
+                <Grid>
+                    <Image Source="{Binding Playlist.ImageUrl, FallbackValue='🎵'}"
+                           Aspect="AspectFill" />
+        
+                    <Label Text="Tap to change image"
+                           FontSize="12"
+                           TextColor="DarkGray"
+                           BackgroundColor="White"
+                           Opacity="0.8"
+                           Padding="5"
+                           HorizontalTextAlignment="Center"
+                           VerticalOptions="End"
+                           HorizontalOptions="Center" />
+                </Grid>
+
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ManageImageCommand}" />
+                </Frame.GestureRecognizers>
             </Frame>
 
             <!-- Description -->
