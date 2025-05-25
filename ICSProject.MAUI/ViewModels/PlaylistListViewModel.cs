@@ -75,14 +75,14 @@ public partial class PlaylistListViewModel : ObservableObject
         }
     }
 
-    public async Task AddPlaylistAsync(string name, string description, string imageUrl)
+    public async Task AddPlaylistAsync(string name, string description, string? imageUrl)
     {
         var newPlaylist = new PlaylistDetailModel
         {
             Id = Guid.NewGuid(),
             Name = name,
             Description = description ?? string.Empty,
-            ImageUrl = imageUrl ?? string.Empty,
+            ImageUrl = imageUrl ?? "song_placeholder.png",
             DurationInSeconds = TimeSpan.Zero,
             SongCount = 0
         };
