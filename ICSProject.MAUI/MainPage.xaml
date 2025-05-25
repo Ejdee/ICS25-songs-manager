@@ -13,28 +13,27 @@
             <Label Text="▶ SONG THINGY" FontAttributes="Bold" FontSize="20" TextColor="Black"/>
 
             <!-- Navigation options -->
-            <Frame Padding="10,5" BackgroundColor="#F6EFF8" HasShadow="False" BorderColor="Transparent">
-                <Label Text="Playlists" FontAttributes="Bold" TextColor="Black">
-                    <Label.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding SetViewCommand}" CommandParameter="Playlists"/>
-                    </Label.GestureRecognizers>
-                </Label>
-            </Frame>
+            <Button Text="Playlists"
+                    Command="{Binding SetViewCommand}"
+                    CommandParameter="Playlists"
+                    BackgroundColor="#eddaf2"
+                    TextColor="Black"
+                    FontAttributes="Bold"/>
 
-            <Frame Padding="10,5" BackgroundColor="#F6EFF8" HasShadow="False" BorderColor="Transparent">
-                <Label Text="Songs" FontAttributes="Bold" TextColor="Black">
-                    <Label.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding SetViewCommand}" CommandParameter="Songs"/>
-                    </Label.GestureRecognizers>
-                </Label>
-            </Frame>
+            <Button Text="Songs"
+                    Command="{Binding SetViewCommand}"
+                    CommandParameter="Songs"
+                    BackgroundColor="#eddaf2"
+                    TextColor="Black"
+                    FontAttributes="Bold"/>
 
             <!-- Genre filter -->
             <StackLayout IsVisible="{Binding ShowGenreFilter}">
                 <Label Text="Genre" FontAttributes="Bold" TextColor="Black"/>
                 <Picker ItemsSource="{Binding SongListViewModel.GenreList}" 
                         SelectedItem="{Binding SongListViewModel.SelectedGenre}" 
-                        TextColor="Black"/>
+                        TextColor="Black"
+                        BackgroundColor="#eddaf2"/>
             </StackLayout>
 
             <!-- Sorting options -->
@@ -42,7 +41,8 @@
             <Picker ItemsSource="{Binding CurrentSortOptions}" 
                     IsVisible="{Binding ShowSortOptions}"
                     SelectedItem="{Binding CurrentSelectedSortOption}"
-                    TextColor="Black"/>
+                    TextColor="Black"
+                    BackgroundColor="#eddaf2"/>
         </StackLayout>
 
         <!-- Title -->
