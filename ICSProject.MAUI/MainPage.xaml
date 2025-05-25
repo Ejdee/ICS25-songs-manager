@@ -4,12 +4,14 @@
              xmlns:views="clr-namespace:ICSProject.MAUI.Views"
              xmlns:vm="clr-namespace:ICSProject.MAUI.ViewModels"
              xmlns:enums="using:ICSProject.MAUI.Enums"
+             xmlns:converters="using:ICSProject.MAUI.Converters"
              x:Class="ICSProject.MAUI.MainPage"
              BackgroundColor="White"
              x:DataType="vm:MainViewModel">
     
     <ContentPage.Resources>
-        <enums:EnumDescriptionConverter x:Key="EnumDescriptionConverter" />
+        <converters:EnumDescriptionConverter x:Key="EnumDescriptionConverter" />
+        <converters:BoolToSortDirectionConverter x:Key="BoolToSortDirectionConverter" />
     </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto,*" ColumnDefinitions="200,*">
@@ -49,6 +51,13 @@
                     ItemDisplayBinding="{Binding ., Converter={StaticResource EnumDescriptionConverter}}"
                     TextColor="Black"
                     BackgroundColor="#eddaf2"/>
+            
+            <!-- Sort direction toggle button -->
+            <Button Text="{Binding IsSortAscending, Converter={StaticResource BoolToSortDirectionConverter}}"
+                    Command="{Binding ToggleSortDirectionCommand}"
+                    IsVisible="{Binding ShowSortOptions}"
+                    BackgroundColor="#eddaf2"
+                    TextColor="Black"/>
         </StackLayout>
 
         <!-- Title -->

@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Reflection;
 
-namespace ICSProject.MAUI.Enums;
+namespace ICSProject.MAUI.Converters;
 
 public class EnumDescriptionConverter : IValueConverter
 {
