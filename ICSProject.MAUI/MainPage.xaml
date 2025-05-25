@@ -38,8 +38,9 @@
             </StackLayout>
 
             <!-- Sorting options -->
-            <Label Text="Sort" FontAttributes="Bold" TextColor="Black"/>
+            <Label Text="Sort" FontAttributes="Bold" IsVisible="{Binding ShowSortOptions}" TextColor="Black"/>
             <Picker ItemsSource="{Binding CurrentSortOptions}" 
+                    IsVisible="{Binding ShowSortOptions}"
                     SelectedItem="{Binding CurrentSelectedSortOption}"
                     TextColor="Black"/>
         </StackLayout>
@@ -162,6 +163,34 @@
                                     <CollectionView.ItemTemplate>
                                         <DataTemplate>
                                             <views:PlaylistListView />
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+                            </Grid>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+                <DataTrigger TargetType="ContentView"
+                             Binding="{Binding ContentType}"
+                             Value="PlaylistSongs">
+                    <Setter Property="Content">
+                        <Setter.Value>
+                            <Grid RowDefinitions="Auto,*">
+                                <views:PlaylistSongsView Grid.Row="0" 
+                                                         BindingContext="{Binding PlaylistDetailViewModel}" />
+                
+                                <CollectionView Grid.Row="1" 
+                                                ItemsSource="{Binding PlaylistDetailViewModel.FilteredSongsInPlaylist}"
+                                                Margin="0,10,0,0">
+                                    <CollectionView.ItemsLayout>
+                                        <GridItemsLayout Orientation="Vertical" 
+                                                         Span="4" 
+                                                         HorizontalItemSpacing="10" 
+                                                         VerticalItemSpacing="10"/>
+                                    </CollectionView.ItemsLayout>
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <views:SongListView ShowEditButton="False" />
                                         </DataTemplate>
                                     </CollectionView.ItemTemplate>
                                 </CollectionView>

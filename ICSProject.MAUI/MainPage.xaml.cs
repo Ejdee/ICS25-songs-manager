@@ -89,12 +89,6 @@ public partial class MainPage : ContentPage
     
     private async void OnNavigateToPlaylistSongsRequested(object? sender, PlaylistDetailModel playlist)
     {
-        var vm = _serviceProvider.GetRequiredService<PlaylistDetailViewModel>();
-        await vm.Load(playlist);
-
-        var songsPage = new PlaylistSongsPage(vm);
-        vm.PlaylistChanged += async (_, __) => await _viewModel.PlaylistListViewModel.LoadPlaylistsAsync();
-
-        await Navigation.PushAsync(songsPage);
+        await _viewModel.ShowPlaylistSongsCommand.ExecuteAsync(playlist);
     }
 }

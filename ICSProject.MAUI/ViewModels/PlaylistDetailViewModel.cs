@@ -45,23 +45,20 @@ public partial class PlaylistDetailViewModel : ObservableObject
     {
     
         SongsInPlaylist.Clear();
-    
-        if (Playlist.Songs != null)
+
+        foreach (var playlistSong in Playlist.Songs)
         {
-            foreach (var playlistSong in Playlist.Songs)
+            try
             {
-                try
+                var songDetail = await _songFacade.GetAsync(playlistSong.SongId);
+                if (songDetail != null)
                 {
-                    var songDetail = await _songFacade.GetAsync(playlistSong.SongId);
-                    if (songDetail != null)
-                    {
-                        SongsInPlaylist.Add(songDetail);
-                    }
+                    SongsInPlaylist.Add(songDetail);
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error loading song details: {ex.Message}");
-                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading song details: {ex.Message}");
             }
         }
         OnPropertyChanged(nameof(SongsInPlaylist));
@@ -145,47 +142,48 @@ public partial class PlaylistDetailViewModel : ObservableObject
         await ShowSongSearchAsync();
     }
     
-private async Task AddSelectedSongToPlaylist(SongListModel selectedSong)
-{
-    try
+    private async Task AddSelectedSongToPlaylist(SongListModel selectedSong)
     {
-        var songDetail = await _songFacade.GetAsync(selectedSong.Id);
-        if (songDetail == null)
+        try
+        {
+            var songDetail = await _songFacade.GetAsync(selectedSong.Id);
+            if (songDetail == null)
+            {
+                if (Application.Current?.MainPage != null)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Error", "Failed to get song details", "OK");
+                }
+                return;
+            }
+
+            var playlistSong = new PlaylistSongListModel
+            {
+                Id = Guid.NewGuid(),
+                SongId = songDetail.Id,
+                SongName = songDetail.Name,
+                SongDurationInSeconds = songDetail.DurationInSeconds
+            };
+            
+            await _playlistSongFacade.SaveAsync(playlistSong, Playlist.Id);
+            await ReloadPlaylistAsync();
+            
+            PlaylistChanged?.Invoke(this, EventArgs.Empty);
+            
+        }
+        catch (Exception ex)
         {
             if (Application.Current?.MainPage != null)
             {
-                await Application.Current.MainPage.DisplayAlert("Error", "Failed to get song details", "OK");
+                await Application.Current.MainPage.DisplayAlert("Error", $"Failed to add song to playlist: {ex.Message}", "OK");
             }
-            return;
-        }
-
-        var playlistSong = new PlaylistSongListModel
-        {
-            Id = Guid.NewGuid(),
-            SongId = songDetail.Id,
-            SongName = songDetail.Name,
-            SongDurationInSeconds = songDetail.DurationInSeconds
-        };
-        
-        await _playlistSongFacade.SaveAsync(playlistSong, Playlist.Id);
-        await ReloadPlaylistAsync();
-        
-        PlaylistChanged?.Invoke(this, EventArgs.Empty);
-        
-    }
-    catch (Exception ex)
-    {
-        if (Application.Current?.MainPage != null)
-        {
-            await Application.Current.MainPage.DisplayAlert("Error", $"Failed to add song to playlist: {ex.Message}", "OK");
-        }
-        else
-        {
-            Console.WriteLine($"Failed to add song to playlist: {ex.Message}");
+            else
+            {
+                Console.WriteLine($"Failed to add song to playlist: {ex.Message}");
+            }
         }
     }
-}
 
+    [RelayCommand]
     private async Task ReloadPlaylistAsync()
     {
         var refreshedPlaylist = await _playlistFacade.GetAsync(Playlist.Id);
@@ -199,67 +197,66 @@ private async Task AddSelectedSongToPlaylist(SongListModel selectedSong)
     
     [RelayCommand]
     private async Task RemoveSongFromPlaylistAsync(SongDetailModel song)
-{
-    if (song == null) return;
-
-    var mainPage = Application.Current?.MainPage;
-    if (mainPage == null) return;
-
-    bool confirm = await mainPage.DisplayAlert(
-        "Remove Song", 
-        $"Are you sure you want to remove '{song.Name}' from this playlist?", 
-        "Yes", "No");
-
-    if (confirm)
     {
-        try
+        var mainPage = Application.Current?.MainPage;
+        if (mainPage == null) return;
+
+        bool confirm = await mainPage.DisplayAlert(
+            "Remove Song", 
+            $"Are you sure you want to remove '{song.Name}' from this playlist?", 
+            "Yes", "No");
+
+        if (confirm)
         {
-            var playlistSong = Playlist.Songs?.FirstOrDefault(ps => ps.SongId == song.Id);
-            if (playlistSong != null)
+            try
             {
-                await _playlistSongFacade.DeleteAsync(playlistSong.Id);
-                await ReloadPlaylistAsync();
-                
-                var updatedSongs = new List<PlaylistSongListModel>(
-                    (Playlist.Songs ?? new ObservableCollection<PlaylistSongListModel>())
-                    .Where(s => s.Id != playlistSong.Id)
-                );
-                
-                Playlist = new PlaylistDetailModel
+                var playlistSong = Playlist.Songs?.FirstOrDefault(ps => ps.SongId == song.Id);
+                if (playlistSong != null)
                 {
-                    Id = Playlist.Id,
-                    Name = Playlist.Name,
-                    Description = Playlist.Description,
-                    DurationInSeconds = Playlist.DurationInSeconds,
-                    SongCount = Playlist.SongCount - 1,
-                    Songs = new ObservableCollection<PlaylistSongListModel>(updatedSongs)
-                };
-                
-                SongsInPlaylist.Remove(song);
-                
-                var playlistToUpdate = new PlaylistDetailModel
-                {
-                    Id = Playlist.Id,
-                    Name = Playlist.Name,
-                    Description = Playlist.Description,
-                    DurationInSeconds = Playlist.DurationInSeconds,
-                    SongCount = Playlist.SongCount
-                };
-                
-                await _playlistFacade.SaveAsync(playlistToUpdate);
-                
-                PlaylistChanged?.Invoke(this, EventArgs.Empty);
+                    await _playlistSongFacade.DeleteAsync(playlistSong.Id);
+                    await ReloadPlaylistAsync();
+                    
+                    var updatedSongs = new List<PlaylistSongListModel>(
+                        (Playlist.Songs ?? new ObservableCollection<PlaylistSongListModel>())
+                        .Where(s => s.Id != playlistSong.Id)
+                    );
+                    
+                    Playlist = new PlaylistDetailModel
+                    {
+                        Id = Playlist.Id,
+                        Name = Playlist.Name,
+                        Description = Playlist.Description,
+                        DurationInSeconds = Playlist.DurationInSeconds,
+                        SongCount = Playlist.SongCount - 1,
+                        Songs = new ObservableCollection<PlaylistSongListModel>(updatedSongs)
+                    };
+                    
+                    SongsInPlaylist.Remove(song);
+                    
+                    var playlistToUpdate = new PlaylistDetailModel
+                    {
+                        Id = Playlist.Id,
+                        Name = Playlist.Name,
+                        Description = Playlist.Description,
+                        DurationInSeconds = Playlist.DurationInSeconds,
+                        SongCount = Playlist.SongCount
+                    };
+                    
+                    await _playlistFacade.SaveAsync(playlistToUpdate);
+                    
+                    PlaylistChanged?.Invoke(this, EventArgs.Empty);
+                }
             }
-        }
-        catch (Exception ex)
-        {
-            if (Application.Current?.MainPage != null)
+            catch (Exception ex)
             {
-                await Application.Current.MainPage.DisplayAlert("Error", $"Failed to remove song from playlist: {ex.Message}", "OK");
+                if (Application.Current?.MainPage != null)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Error", $"Failed to remove song from playlist: {ex.Message}", "OK");
+                }
             }
         }
     }
-}
+    
     [ObservableProperty]
     private string _songSearchText = string.Empty;
 

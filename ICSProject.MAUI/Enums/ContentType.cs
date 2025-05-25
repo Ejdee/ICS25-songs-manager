@@ -3,5 +3,6 @@
 public enum ContentType
 {
     Playlists,
-    Songs
+    Songs,
+    PlaylistSongs
 }

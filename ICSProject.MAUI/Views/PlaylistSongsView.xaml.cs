@@ -8,16 +8,21 @@ using ICSProject.MAUI.ViewModels;
 
 namespace ICSProject.MAUI.Views;
 
-public partial class PlaylistSongsPage : ContentPage
+public partial class PlaylistSongsView : ContentView
 {
-    private readonly PlaylistDetailViewModel _viewModel;
- 
-    
-    public PlaylistSongsPage(PlaylistDetailViewModel viewModel)
+    public PlaylistSongsView()
     {
         InitializeComponent();
-        BindingContext = _viewModel = viewModel;
-        viewModel.EditPlaylistRequested += OnEditPlaylistRequested;
+    }
+
+    protected override void OnBindingContextChanged()
+    {
+        base.OnBindingContextChanged();
+
+        if (BindingContext is PlaylistDetailViewModel viewModel)
+        {
+            viewModel.EditPlaylistRequested += OnEditPlaylistRequested;
+        }
     }
 
     private async void OnEditPlaylistRequested(object? sender, PlaylistDetailModel playlist)
@@ -32,11 +37,5 @@ public partial class PlaylistSongsPage : ContentPage
                 await Navigation.PushAsync(new PlaylistDetailPage(editViewModel));
             }
         }
-    }
-    
-    protected override async void OnAppearing()
-    {
-        base.OnAppearing();
-        await _viewModel.LoadSongsInPlaylistAsync();
     }
 }
