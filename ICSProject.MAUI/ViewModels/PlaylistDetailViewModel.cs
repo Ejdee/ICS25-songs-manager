@@ -142,6 +142,7 @@ public partial class PlaylistDetailViewModel : ObservableObject
         await ShowSongSearchAsync();
     }
 
+    [RelayCommand]
     private async Task ReloadPlaylistAsync()
     {
         var refreshedPlaylist = await _playlistFacade.GetAsync(Playlist.Id);
@@ -155,8 +156,6 @@ public partial class PlaylistDetailViewModel : ObservableObject
     [RelayCommand]
     private async Task RemoveSongFromPlaylistAsync(SongDetailModel song)
     {
-        if (song == null) return;
-
         var mainPage = Application.Current?.MainPage;
         if (mainPage == null) return;
 
