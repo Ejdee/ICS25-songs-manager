@@ -10,7 +10,7 @@
                   <TapGestureRecognizer Tapped="OnPlaylistTapped"></TapGestureRecognizer>
            </Frame.GestureRecognizers>
            <Grid RowDefinitions="Auto,Auto,*" ColumnDefinitions="*,Auto" Padding="10">
-            <Image Source="song_placeholder.png"
+            <Image Source="{Binding ImageUrl}"
                    HeightRequest="140"
                    Aspect="AspectFill"
                    HorizontalOptions="Fill"

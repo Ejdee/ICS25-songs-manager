@@ -13,6 +13,7 @@ public class PlaylistModelMapper(PlaylistSongModelMapper playlistSongModelMapper
             {
                 Id = entity.Id,
                 Name = entity.Name,
+                ImageUrl = entity.ImageUrl,
                 DurationInSeconds = GetTotalDuration(entity),
                 SongCount = GetSongCount(entity)
             };
@@ -25,6 +26,7 @@ public class PlaylistModelMapper(PlaylistSongModelMapper playlistSongModelMapper
                 Id = entity.Id,
                 Name = entity.Name,
                 Description = entity.Description,
+                ImageUrl = entity.ImageUrl,
                 DurationInSeconds = GetTotalDuration(entity),
                 SongCount = GetSongCount(entity),
                 Songs = playlistSongModelMapper.MapToListModel(entity.PlaylistSongs)
@@ -37,6 +39,7 @@ public class PlaylistModelMapper(PlaylistSongModelMapper playlistSongModelMapper
             Id = model.Id,
             Name = model.Name,
             Description = model.Description,
+            ImageUrl = model.ImageUrl,
         };
     
     private static TimeSpan GetTotalDuration(PlaylistEntity playlistEntity)

@@ -57,13 +57,13 @@ public partial class MainPage : ContentPage
         var popup = new AddPlaylistPopup();
         var result = await this.ShowPopupAsync(popup);
 
-        if (result is ValueTuple<string, string> values)
+        if (result is ValueTuple<string, string, string> values)
         {
-            var (name, description) = values;
+            var (name, description, imageUrl) = values;
 
             if (!string.IsNullOrWhiteSpace(name))
             {
-                await _viewModel.PlaylistListViewModel.AddPlaylistAsync(name, description);
+                await _viewModel.PlaylistListViewModel.AddPlaylistAsync(name, description, imageUrl);
                 await _viewModel.PlaylistListViewModel.LoadPlaylistsAsync();
             }
         }

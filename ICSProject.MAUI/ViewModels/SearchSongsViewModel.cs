@@ -6,6 +6,19 @@ using ICS_Project.BL.Models;
 
 namespace ICSProject.MAUI.ViewModels;
 
+public partial class SelectableSongModel : ObservableObject
+{
+    public SongListModel Song { get; set; }
+    
+    [ObservableProperty]
+    private bool _isSelected;
+    
+    public SelectableSongModel(SongListModel song)
+    {
+        Song = song;
+    }
+}
+
 public partial class SearchSongsViewModel : ObservableObject
 {
     private readonly SongFacade _songFacade;
@@ -16,16 +29,23 @@ public partial class SearchSongsViewModel : ObservableObject
     [ObservableProperty]
     private string _searchText = string.Empty;
     
-    public ObservableCollection<SongListModel> FilteredSongs { get; } = new();
+    [ObservableProperty]
+    private int _selectedCount = 0;
+    
+    public ObservableCollection<SelectableSongModel> FilteredSongs { get; } = new();
+    public ObservableCollection<SelectableSongModel> SelectedSongs { get; } = new();
     
     public string EmptyMessage => string.IsNullOrWhiteSpace(SearchText) 
         ? "Start typing to search songs..." 
         : $"No songs found for '{SearchText}'";
     
-    public event EventHandler<SongListModel>? SongSelected;
+    public string SelectionMessage => $"{SelectedCount} songs selected";
+    
+    public event EventHandler<List<SongListModel>>? MultipleSongsSelected;
     public event EventHandler? CloseRequested;
     
-    public IRelayCommand<SongListModel> AddSongCommand { get; }
+    public IRelayCommand<SelectableSongModel> AddSongCommand { get; }
+    public IRelayCommand AddSelectedSongsCommand { get; }
     public IRelayCommand CloseCommand { get; }
     
     public SearchSongsViewModel(SongFacade songFacade, Guid playlistId, IEnumerable<Guid> songsInPlaylist)
@@ -34,7 +54,8 @@ public partial class SearchSongsViewModel : ObservableObject
         _playlistId = playlistId;
         _songsInPlaylistIds = songsInPlaylist.ToHashSet();
         
-        AddSongCommand = new RelayCommand<SongListModel>(OnSongSelected);
+        AddSongCommand = new RelayCommand<SelectableSongModel>(OnSongSelected);
+        AddSelectedSongsCommand = new RelayCommand(AddSelectedSongs, () => SelectedCount > 0);
         CloseCommand = new RelayCommand(() => CloseRequested?.Invoke(this, EventArgs.Empty));
         
         _ = LoadAvailableSongsAsync();
@@ -74,7 +95,12 @@ public partial class SearchSongsViewModel : ObservableObject
             FilteredSongs.Clear();
             foreach (var song in filtered.Take(50))
             {
-                FilteredSongs.Add(song);
+                var existingSelected = SelectedSongs.FirstOrDefault(ss => ss.Song.Id == song.Id);
+                var selectableSong = new SelectableSongModel(song)
+                {
+                    IsSelected = existingSelected?.IsSelected ?? false
+                };
+                FilteredSongs.Add(selectableSong);
             }
             
             OnPropertyChanged(nameof(EmptyMessage));
@@ -85,12 +111,60 @@ public partial class SearchSongsViewModel : ObservableObject
         }
     }
     
-    private void OnSongSelected(SongListModel? song)
+    private void OnSongSelected(SelectableSongModel? song)
     {
         if (song != null)
         {
-            SongSelected?.Invoke(this, song);
+            ToggleSongSelection(song);  
         }
+    }
+    
+    private void ToggleSongSelection(SelectableSongModel? song)
+    {
+        if (song == null) return;
+        
+        song.IsSelected = !song.IsSelected;
+        
+        if (song.IsSelected)
+        {
+            if (!SelectedSongs.Any(s => s.Song.Id == song.Song.Id))
+            {
+                SelectedSongs.Add(song);
+            }
+        }
+        else
+        {
+            var toRemove = SelectedSongs.FirstOrDefault(s => s.Song.Id == song.Song.Id);
+            if (toRemove != null)
+            {
+                SelectedSongs.Remove(toRemove);
+            }
+        }
+        
+        SelectedCount = SelectedSongs.Count;
+        AddSelectedSongsCommand.NotifyCanExecuteChanged();
+        OnPropertyChanged(nameof(SelectionMessage));
+    }
+    
+    private void AddSelectedSongs()
+    {
+        if (SelectedSongs.Count > 0)
+        {
+            var songList = SelectedSongs.Select(ss => ss.Song).ToList();
+            MultipleSongsSelected?.Invoke(this, songList);
+        }
+    }
+    
+    private void ClearSelection()
+    {
+        foreach (var song in FilteredSongs)
+        {
+            song.IsSelected = false;
+        }
+        SelectedSongs.Clear();
+        SelectedCount = 0;
+        AddSelectedSongsCommand.NotifyCanExecuteChanged();
+        OnPropertyChanged(nameof(SelectionMessage));
     }
     
     partial void OnSearchTextChanged(string value)

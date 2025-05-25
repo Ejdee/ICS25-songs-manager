@@ -11,7 +11,7 @@ public partial class AddPlaylistPopup : Popup
 
     private void OnSaveClicked(object sender, EventArgs e)
     {
-        Close((NameEntry.Text, DescriptionEntry.Text));
+        Close((NameEntry.Text, DescriptionEntry.Text, ImageUrlEntry.Text));
     }
 
     private void OnCancelClicked(object sender, EventArgs e)

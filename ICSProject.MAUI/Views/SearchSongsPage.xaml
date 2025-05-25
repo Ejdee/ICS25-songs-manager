@@ -8,7 +8,7 @@
              Title="Search"
              BackgroundColor="White">
 
-    <Grid RowDefinitions="Auto,Auto,*,Auto" Padding="20">
+    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" Padding="20">
         
         <!-- Title -->
         <Label Grid.Row="0" 
@@ -32,45 +32,70 @@
                    TextColor="Black"/>
         </Frame>
         
+        <!-- Selection Info + Add Button -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Margin="0,0,0,15">
+            <Label Grid.Column="0"
+                   Text="{Binding SelectionMessage}"
+                   FontSize="14"
+                   TextColor="Gray"
+                   VerticalOptions="Center"/>
+            
+            <Button Grid.Column="1"
+                    Text="Add Selected"
+                    BackgroundColor="Green"
+                    TextColor="White"
+                    FontSize="12"
+                    Padding="10,5"
+                    CornerRadius="15"
+                    Command="{Binding AddSelectedSongsCommand}"/>
+        </Grid>
+        
         <!-- Live Results -->
-        <CollectionView Grid.Row="2" 
+        <CollectionView Grid.Row="3" 
                         ItemsSource="{Binding FilteredSongs}"
                         BackgroundColor="Transparent">
             <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:SongListModel">
-                    <Grid ColumnDefinitions="*,Auto" 
-                          Padding="15,10" 
-                          BackgroundColor="White"
-                          Margin="0,2">
-                        <Grid.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:SearchSongsViewModel}}, Path=AddSongCommand}"
-                                                  CommandParameter="{Binding .}"/>
-                        </Grid.GestureRecognizers>
+                <DataTemplate x:DataType="viewmodels:SelectableSongModel">
+                    <Border StrokeThickness="2" 
+                            Stroke="Transparent"
+                            BackgroundColor="White"
+                            Margin="0,2">
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                <Setter Property="Stroke" Value="Green" />
+                                <Setter Property="BackgroundColor" Value="LightGreen" />
+                            </DataTrigger>
+                        </Border.Triggers>
                         
-                        <StackLayout Grid.Column="0">
-                            <Label Text="{Binding Name}" 
-                                   FontAttributes="Bold" 
-                                   FontSize="16"
-                                   TextColor="Black"/>
-                            <Label Text="{Binding Genre}" 
-                                   FontSize="12" 
-                                   TextColor="Gray"/>
-                            <Label Text="{Binding DurationInSeconds, StringFormat='{0:mm\\:ss}'}" 
-                                   FontSize="12" 
-                                   TextColor="Gray"/>
-                        </StackLayout>
-                        
-                        <Button Grid.Column="1" 
-                                Text="+" 
-                                BackgroundColor="Green"
-                                TextColor="White"
-                                WidthRequest="40"
-                                HeightRequest="40"
-                                CornerRadius="20"
-                                FontSize="20"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:SearchSongsViewModel}}, Path=AddSongCommand}"
-                                CommandParameter="{Binding .}"/>
-                    </Grid>
+                        <Grid ColumnDefinitions="Auto,*" Padding="15,10">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:SearchSongsViewModel}}, Path=AddSongCommand}"
+                                                      CommandParameter="{Binding .}"/>
+                            </Grid.GestureRecognizers>
+                            
+                            <!-- Selection Indicator -->
+                            <Label Grid.Column="0"
+                                   Text="✓"
+                                   FontSize="20"
+                                   TextColor="Green"
+                                   VerticalOptions="Center"
+                                   Margin="0,0,10,0"
+                                   IsVisible="{Binding IsSelected}"/>
+                            
+                            <StackLayout Grid.Column="1">
+                                <Label Text="{Binding Song.Name}" 
+                                       FontAttributes="Bold" 
+                                       FontSize="16"
+                                       TextColor="Black"/>
+                                <Label Text="{Binding Song.Genre}" 
+                                       FontSize="12" 
+                                       TextColor="Gray"/>
+                                <Label Text="{Binding Song.DurationInSeconds, StringFormat='{0:mm\\:ss}'}" 
+                                       FontSize="12" 
+                                       TextColor="Gray"/>
+                            </StackLayout>
+                        </Grid>
+                    </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
             
@@ -86,14 +111,14 @@
             </CollectionView.EmptyView>
         </CollectionView>
         
-        <!-- ~1~ Close Button @1@ -->
-        <!-- <Button Grid.Row="3"  -->
-        <!--         Text="Close"  -->
-        <!--         BackgroundColor="Gray" -->
-        <!--         TextColor="White" -->
-        <!--         Margin="0,15,0,0" -->
-        <!--         Padding="15" -->
-        <!--         CornerRadius="10" -->
-        <!--         Command="{Binding CloseCommand}"/> -->
+        <!-- Close Button -->
+        <Button Grid.Row="4" 
+                Text="Close" 
+                BackgroundColor="Gray"
+                TextColor="White"
+                Margin="0,15,0,0"
+                Padding="15"
+                CornerRadius="10"
+                Command="{Binding CloseCommand}"/>
     </Grid>
 </ContentPage>
