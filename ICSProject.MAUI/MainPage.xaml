@@ -3,9 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:views="clr-namespace:ICSProject.MAUI.Views"
              xmlns:vm="clr-namespace:ICSProject.MAUI.ViewModels"
+             xmlns:enums="using:ICSProject.MAUI.Enums"
              x:Class="ICSProject.MAUI.MainPage"
              BackgroundColor="White"
              x:DataType="vm:MainViewModel">
+    
+    <ContentPage.Resources>
+        <enums:EnumDescriptionConverter x:Key="EnumDescriptionConverter" />
+    </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto,*" ColumnDefinitions="200,*">
         <!-- Sidebar -->
@@ -41,6 +46,7 @@
             <Picker ItemsSource="{Binding CurrentSortOptions}" 
                     IsVisible="{Binding ShowSortOptions}"
                     SelectedItem="{Binding CurrentSelectedSortOption}"
+                    ItemDisplayBinding="{Binding ., Converter={StaticResource EnumDescriptionConverter}}"
                     TextColor="Black"
                     BackgroundColor="#eddaf2"/>
         </StackLayout>
