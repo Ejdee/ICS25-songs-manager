@@ -27,6 +27,10 @@ public partial class MainViewModel : ObservableObject
         ContentType == ContentType.Songs
             ? SongListViewModel.SongSortOptions
             : PlaylistListViewModel.PlaylistSortOptions;
+    
+    public bool IsSortAscending => ContentType == ContentType.Songs
+        ? SongListViewModel.IsSortAscending
+        : PlaylistListViewModel.IsSortAscending;
 
     [ObservableProperty] 
     private object _currentViewModel;
@@ -35,7 +39,7 @@ public partial class MainViewModel : ObservableObject
     private ContentType _contentType;
 
     [ObservableProperty] 
-    private SortOptions _currentSelectedSortOption;
+    private SortOptions? _currentSelectedSortOption;
     
     [RelayCommand]
     private void SetView(string viewType)
@@ -65,6 +69,7 @@ public partial class MainViewModel : ObservableObject
 
         _currentViewModel = SongListViewModel;
         _contentType = ContentType.Songs;
+        CurrentSelectedSortOption = SongListViewModel.SongSortOptions.FirstOrDefault();
     }
 
     [RelayCommand]
@@ -104,24 +109,63 @@ public partial class MainViewModel : ObservableObject
             CurrentViewModel = SongListViewModel;
         }
     }
+    
+    [RelayCommand]
+    private async Task ToggleSortDirection()
+    {
+        if (ContentType == ContentType.Songs)
+        {
+            SongListViewModel.IsSortAscending = !SongListViewModel.IsSortAscending;
+            await SongListViewModel.LoadSongsAsync();
+        }
+        else if (ContentType == ContentType.Playlists)
+        {
+            PlaylistListViewModel.IsSortAscending = !PlaylistListViewModel.IsSortAscending;
+            await PlaylistListViewModel.LoadPlaylistsAsync();
+        }
+
+        OnPropertyChanged(nameof(IsSortAscending));
+    }
 
     partial void OnContentTypeChanged(ContentType value)
     {
+        CurrentSelectedSortOption = null;
+        
         OnPropertyChanged(nameof(CurrentTitle));
         OnPropertyChanged(nameof(ShowGenreFilter));
         OnPropertyChanged(nameof(CurrentSortOptions));
         OnPropertyChanged(nameof(ShowSortOptions));
+        OnPropertyChanged(nameof(IsSortAscending));
+        OnPropertyChanged(nameof(ToggleSortDirectionCommand));
+        
+        if (value == ContentType.Songs)
+        {
+            CurrentSelectedSortOption = SongListViewModel.SongSortOptions.FirstOrDefault();
+        }
+        else if (value == ContentType.Playlists)
+        {
+            CurrentSelectedSortOption = PlaylistListViewModel.PlaylistSortOptions.FirstOrDefault();
+        } 
+        
+        OnPropertyChanged(nameof(CurrentSelectedSortOption));
     }
 
-    partial void OnCurrentSelectedSortOptionChanged(SortOptions value)
+    partial void OnCurrentSelectedSortOptionChanged(SortOptions? value)
     {
+        if (value == null)
+        {
+            return;
+        }
+        
+        SortOptions selectedSortOption = value.Value;
+        
         if (ContentType == ContentType.Songs)
         {
-            SongListViewModel.SelectedSortOption = value;
+            SongListViewModel.SelectedSortOption = selectedSortOption;
         }
         else
         {
-            PlaylistListViewModel.SelectedSortOption = value;
+            PlaylistListViewModel.SelectedSortOption = selectedSortOption;
         }
     }
 }

@@ -32,6 +32,9 @@ public partial class SongListViewModel : ObservableObject
     [ObservableProperty]
     private string _searchText = string.Empty;
 
+    [ObservableProperty] 
+    private bool _isSortAscending = true;
+
     public IRelayCommand LoadSongsCommand { get; }
     public IRelayCommand AddSongPopupCommand { get; }
     public IAsyncRelayCommand<SongListModel> EditSongCommand { get; }
@@ -78,6 +81,13 @@ public partial class SongListViewModel : ObservableObject
                 GenreList.Add(song.Genre); 
             }
         }
+    }
+
+    [RelayCommand]
+    private void ToggleSortDirection()
+    {
+        IsSortAscending = !IsSortAscending;
+        _ = FilterAndSortSongsAsync();
     }
     
     private async Task SelectSong(SongListModel selected)
@@ -130,10 +140,12 @@ public partial class SongListViewModel : ObservableObject
             filtered = filtered.Where(s => s.Genre.Equals(SelectedGenre, StringComparison.OrdinalIgnoreCase));
         }
 
-        filtered = SelectedSortOption switch
+        filtered = (SelectedSortOption, IsSortAscending) switch
         {
-            SortOptions.SongName => filtered.OrderBy(s => s.Name),
-            SortOptions.SongDuration => filtered.OrderBy(s => s.DurationInSeconds),
+            (SortOptions.SongName, true) => filtered.OrderBy(s => s.Name),
+            (SortOptions.SongName, false) => filtered.OrderByDescending(s => s.Name),
+            (SortOptions.SongDuration, true) => filtered.OrderBy(s => s.DurationInSeconds),
+            (SortOptions.SongDuration, false) => filtered.OrderByDescending(s => s.DurationInSeconds),
             _ => filtered
         };
 

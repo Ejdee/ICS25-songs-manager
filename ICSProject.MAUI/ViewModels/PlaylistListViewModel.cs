@@ -25,6 +25,9 @@ public partial class PlaylistListViewModel : ObservableObject
 
     [ObservableProperty] 
     private SortOptions _selectedSortOption = SortOptions.PlaylistName;
+    
+    [ObservableProperty]
+    private bool _isSortAscending = true;
 
     public IAsyncRelayCommand LoadPlaylistsCommand { get; }
     public IRelayCommand AddPlaylistPopupCommand { get; }
@@ -62,6 +65,17 @@ public partial class PlaylistListViewModel : ObservableObject
                 playlists = await _playlistFacade.GetSortedAsync(SelectedSortOption);
             }
             
+            playlists = (SelectedSortOption, IsSortAscending) switch
+            {
+                (SortOptions.PlaylistName, true) => playlists.OrderBy(p => p.Name, StringComparer.OrdinalIgnoreCase),
+                (SortOptions.PlaylistName, false) => playlists.OrderByDescending(p => p.Name, StringComparer.OrdinalIgnoreCase),
+                (SortOptions.PlaylistSongCount, true) => playlists.OrderBy(p => p.SongCount),
+                (SortOptions.PlaylistSongCount, false) => playlists.OrderByDescending(p => p.SongCount),
+                (SortOptions.PlaylistDuration, true) => playlists.OrderBy(p => p.DurationInSeconds),
+                (SortOptions.PlaylistDuration, false) => playlists.OrderByDescending(p => p.DurationInSeconds),
+                _ => playlists
+            };
+            
             Playlists.Clear();
             foreach (var playlist in playlists)
             {
@@ -88,6 +102,13 @@ public partial class PlaylistListViewModel : ObservableObject
         };
 
         await _playlistFacade.SaveAsync(newPlaylist);
+        await LoadPlaylistsAsync();
+    }
+    
+    [RelayCommand]
+    private async Task ToggleSortDirection()
+    {
+        IsSortAscending = !IsSortAscending;
         await LoadPlaylistsAsync();
     }
 
