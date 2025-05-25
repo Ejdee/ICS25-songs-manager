@@ -139,7 +139,8 @@
                                     <ImageButton Grid.Column="1"
                                                  Source="refresh.png"
                                                  Margin="10,0"
-                                                 WidthRequest="32" HeightRequest="32"/>
+                                                 WidthRequest="32" HeightRequest="32"
+                                                 Command="{Binding PlaylistListViewModel.LoadPlaylistsCommand}"/>
 
                                     <Button Grid.Column="2"
                                             Text="Add playlist"
