@@ -76,9 +76,9 @@ public partial class SongListViewModel : ObservableObject
         
         foreach (var song in _allSongs)
         {
-            if (!GenreList.Contains(song.Genre))
+            if (!string.IsNullOrEmpty(song.Genre) && !GenreList.Contains(song.Genre))
             {
-                GenreList.Add(song.Genre); 
+                GenreList.Add(song.Genre);
             }
         }
     }
@@ -137,7 +137,7 @@ public partial class SongListViewModel : ObservableObject
 
         if (!string.IsNullOrWhiteSpace(SelectedGenre) && SelectedGenre != "All")
         {
-            filtered = filtered.Where(s => s.Genre.Equals(SelectedGenre, StringComparison.OrdinalIgnoreCase));
+            filtered = filtered.Where(s => s.Genre?.Equals(SelectedGenre, StringComparison.OrdinalIgnoreCase) == true);
         }
 
         filtered = (SelectedSortOption, IsSortAscending) switch
