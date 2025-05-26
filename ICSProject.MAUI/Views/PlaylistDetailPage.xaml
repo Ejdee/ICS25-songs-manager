@@ -5,210 +5,238 @@
              xmlns:models="clr-namespace:ICS_Project.BL.Models;assembly=ICS_Project.BL"
              x:Class="ICSProject.MAUI.Views.PlaylistDetailPage"
              x:DataType="viewmodels:PlaylistDetailViewModel"
-             BackgroundColor="White"
+             BackgroundColor="#FFFFFF"
              Title="Playlist Detail">
 
-    <Grid RowDefinitions="Auto,Auto,*" Padding="20">
-        <!-- Header Section -->
-        <Grid ColumnDefinitions="Auto, *" Grid.Row="0" ColumnSpacing="20">
-            <Frame Padding="0" CornerRadius="5" HasShadow="False" IsClippedToBounds="True"
-                   HeightRequest="200" WidthRequest="200" BackgroundColor="LightGray">
-                <Grid>
-                    <Image Source="{Binding Playlist.ImageUrl, FallbackValue='🎵'}"
-                           Aspect="AspectFill" />
-        
-                    <Label Text="Tap to change image"
-                           FontSize="12"
-                           TextColor="DarkGray"
-                           BackgroundColor="White"
-                           Opacity="0.8"
-                           Padding="5"
-                           HorizontalTextAlignment="Center"
-                           VerticalOptions="End"
-                           HorizontalOptions="Center" />
-                </Grid>
+    <Grid RowDefinitions="Auto,*" Padding="20">
+        <Label Text="Playlist Details"
+               FontSize="32"
+               FontAttributes="Bold"
+               TextColor="#2D3142"
+               HorizontalOptions="Center"
+               Margin="0,10,0,20"/>
 
-                <Frame.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding ManageImageCommand}" />
-                </Frame.GestureRecognizers>
-            </Frame>
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout HorizontalOptions="Center" WidthRequest="900">
+                <Frame BackgroundColor="#F7F7F7"
+                       Margin="0,0,0,20"
+                       Padding="30"
+                       CornerRadius="15"
+                       HasShadow="True"
+                       BorderColor="Transparent">
 
-            <!-- Description -->
-            <Grid Grid.Column="1"
-                  RowDefinitions="Auto,Auto,Auto,Auto"
-                  ColumnDefinitions="Auto,*"
-                  ColumnSpacing="10"
-                  RowSpacing="10"
-                  VerticalOptions="Start">
+                    <VerticalStackLayout Spacing="20">
+                        <!-- Image and Basic Info -->
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="30">
+                            <!-- Playlist Image -->
+                            <Frame Grid.Column="0"
+                                   Padding="0"
+                                   CornerRadius="10"
+                                   HasShadow="False"
+                                   IsClippedToBounds="True"
+                                   HeightRequest="200"
+                                   WidthRequest="200"
+                                   BorderColor="#E5E7EB">
+                                <Grid>
+                                    <Image Source="{Binding Playlist.ImageUrl, FallbackValue='🎵'}"
+                                           Aspect="AspectFill" />
 
-                <!-- Playlist Name -->
-                <Label Text="Name" 
-                       TextColor="Gray"
-                       VerticalOptions="Center"
-                       Grid.Row="0" Grid.Column="0" />
-                <Entry Text="{Binding Playlist.Name}" 
-                       Placeholder="Playlist Name" 
-                       FontSize="20" 
-                       FontAttributes="Bold"
-                       TextColor="Black"
-                       Grid.Row="0" Grid.Column="1" />
+                                    <Label Text="Tap to change image"
+                                           FontSize="12"
+                                           TextColor="#4F5D75"
+                                           BackgroundColor="#FFFFFF"
+                                           Opacity="0.9"
+                                           Padding="5"
+                                           HorizontalTextAlignment="Center"
+                                           VerticalOptions="End"
+                                           HorizontalOptions="Fill" />
+                                </Grid>
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding ManageImageCommand}" />
+                                </Frame.GestureRecognizers>
+                            </Frame>
 
-                <!-- Description -->
-                <Label Text="Description" 
-                       TextColor="Gray"
-                       VerticalOptions="Start"
-                       Grid.Row="1" Grid.Column="0" />
-                <Editor Text="{Binding Playlist.Description}" 
-                        HeightRequest="80"
-                        AutoSize="Disabled"
-                        TextColor="Black"
-                        Grid.Row="1" Grid.Column="1" />
+                            <!-- Playlist Details -->
+                            <VerticalStackLayout Grid.Column="1" Spacing="20">
+                                <!-- Name -->
+                                <VerticalStackLayout Spacing="5">
+                                    <Label Text="Name" FontSize="14" TextColor="#6B7280"/>
+                                    <Frame Padding="15,0" HasShadow="False" BackgroundColor="White" CornerRadius="8" HeightRequest="50">
+                                        <Entry Text="{Binding Playlist.Name}"
+                                               Placeholder="Playlist Name"
+                                               TextColor="#2D3142"
+                                               BackgroundColor="Transparent"
+                                               VerticalOptions="Center"/>
+                                    </Frame>
+                                </VerticalStackLayout>
 
-                <!-- Song Count -->
-                <Label Text="Songs" 
-                       TextColor="Gray"
-                       VerticalOptions="Center"
-                       Grid.Row="2" Grid.Column="0" />
-                <Label Text="{Binding Playlist.SongCount}" 
-                       TextColor="Gray"
-                       VerticalOptions="Center"
-                       Grid.Row="2" Grid.Column="1" />
+                                <!-- Description -->
+                                <VerticalStackLayout Spacing="5">
+                                    <Label Text="Description" FontSize="14" TextColor="#6B7280"/>
+                                    <Frame Padding="15,10" HasShadow="False" BackgroundColor="White" CornerRadius="8" HeightRequest="100">
+                                        <Editor Text="{Binding Playlist.Description}"
+                                                Placeholder="Enter description"
+                                                TextColor="#2D3142"
+                                                BackgroundColor="Transparent"
+                                                AutoSize="TextChanges"/>
+                                    </Frame>
+                                </VerticalStackLayout>
 
-                <!-- Duration -->
-                <Label Text="Duration" 
-                       TextColor="Gray"
-                       VerticalOptions="Center"
-                       Grid.Row="3" Grid.Column="0" />
-                <Label Text="{Binding Playlist.DurationInSeconds, StringFormat='{0:hh\\:mm\\:ss}'}" 
-                       TextColor="Gray"
-                       VerticalOptions="Center"
-                       Grid.Row="3" Grid.Column="1" />
-            </Grid>
-        </Grid>
-        
-        <!-- Buttons + Search bar -->
-        <Grid Grid.Row="1" ColumnSpacing="10" Margin="0,10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" /> 
-            </Grid.ColumnDefinitions>
-
-            <Button Text="Save"
-                    Command="{Binding SaveCommand}"
-                    WidthRequest="40" 
-                    HeightRequest="40" 
-                    BackgroundColor="Transparent"
-                    Grid.Column="0" 
-                    ImageSource="check_solid.png"/>
-
-            <Button Text="Add Song"
-                    Command="{Binding AddSongToPlaylistCommand}"
-                    WidthRequest="40" 
-                    HeightRequest="40"
-                    BackgroundColor="Transparent"
-                    Grid.Column="1" 
-                    ImageSource="plus_solid.png"/>
-
-            <Button Text="Delete"
-                    Command="{Binding DeleteCommand}"
-                    WidthRequest="40" 
-                    HeightRequest="40" 
-                    BackgroundColor="Transparent"
-                    Grid.Column="2" 
-                    ImageSource="trash_solid.png"/>
-            
-            <Frame Grid.Column="3"
-                   Padding="10"
-                   BackgroundColor="#F6EFF8"
-                   CornerRadius="20"
-                   HasShadow="False"
-                   HorizontalOptions="End"
-                   VerticalOptions="Center"
-                   WidthRequest="220">  
-
-                <Entry Placeholder="Search in playlist..."
-                       Text="{Binding SongSearchText}"
-                       ClearButtonVisibility="WhileEditing"
-                       Keyboard="Default"
-                       TextColor="Black"
-                       HorizontalOptions="FillAndExpand"
-                       VerticalOptions="Center" />
-            </Frame>
-        </Grid>
-        
-        <!-- Songs List -->
-        <StackLayout Grid.Row="2" Margin="0,10,0,0" >
-
-            <!-- Header -->
-            <Grid ColumnDefinitions="0.5*,0.5*" Padding="10,5" ColumnSpacing="0">
-                <Grid Grid.Column="0" ColumnDefinitions="3*,2*,2*" ColumnSpacing="20">
-                    <Label Text="Name" TextColor="Gray" FontAttributes="Bold" Grid.Column="0"/>
-                    <Label Text="Genre" TextColor="Gray" FontAttributes="Bold" Grid.Column="1" />
-                    <Label Text="Duration" TextColor="Gray" FontAttributes="Bold" Grid.Column="2"/>
-                </Grid>
-                <Label Text="" Grid.Column="1" TextColor="Gray" FontAttributes="Bold" HorizontalTextAlignment="End"/>
-            </Grid>
-            
-            <BoxView HeightRequest="1" BackgroundColor="LightGray" HorizontalOptions="FillAndExpand" Margin="0,5,0,5"/>
-
-            <!-- Songs -->
-            <CollectionView ItemsSource="{Binding FilteredSongsInPlaylist}" HeightRequest="400">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:SongDetailModel">
-                        <Grid Padding="10,5" ColumnDefinitions="0.5*,0.5*" ColumnSpacing="0">
-                            <!-- Song Details -->
-                            <Grid Grid.Column="0" RowDefinitions="Auto,Auto" ColumnDefinitions="3*,2*,2*" ColumnSpacing="20">
-                                <Label Grid.Row="0" Grid.ColumnSpan="3"
-                                       Text="{Binding Name}" 
-                                       FontAttributes="Bold" 
-                                       TextColor="Black"/>
-
-                                <Label Grid.Row="1" Grid.Column="0"
-                                       Text="{Binding Artist}" 
-                                       FontSize="12" 
-                                       TextColor="Gray"/>
-
-                                <Label Grid.Row="1" Grid.Column="1"
-                                       Text="{Binding Genre}" 
-                                       FontSize="12" 
-                                       TextColor="Gray"
-                                       HorizontalTextAlignment="Start"/>
-
-                                <Label Grid.Row="1" Grid.Column="2"
-                                       Text="{Binding DurationInSeconds, StringFormat='{0:mm\\:ss}'}"
-                                       FontSize="12"
-                                       TextColor="Gray" 
-                                       HorizontalTextAlignment="Start"/>
-                            </Grid>
-                            
-                            <!-- Remove Button -->
-                            <Button Grid.Column="1"
-                                    WidthRequest="40" 
-                                    HeightRequest="40" 
-                                    Padding="10,0"
-                                    HorizontalOptions="End"
-                                    VerticalOptions="Center"
-                                    BackgroundColor="Transparent"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:PlaylistDetailViewModel}}, Path=RemoveSongFromPlaylistCommand}"
-                                    CommandParameter="{Binding .}">
-                                <Button.ImageSource>
-                                    <FileImageSource File="xmark_solid.png" />
-                                </Button.ImageSource>
-                            </Button>
+                                <!-- Stats -->
+                                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="15">
+                                    <Frame Grid.Column="0" Padding="15,10" HasShadow="False" BackgroundColor="White" CornerRadius="8">
+                                        <StackLayout>
+                                            <Label Text="Songs" FontSize="12" TextColor="#6B7280"/>
+                                            <Label Text="{Binding Playlist.SongCount}" FontSize="16" TextColor="#2D3142" FontAttributes="Bold"/>
+                                        </StackLayout>
+                                    </Frame>
+                                    <Frame Grid.Column="1" Padding="15,10" HasShadow="False" BackgroundColor="White" CornerRadius="8">
+                                        <StackLayout>
+                                            <Label Text="Duration" FontSize="12" TextColor="#6B7280"/>
+                                            <Label Text="{Binding Playlist.DurationInSeconds, StringFormat='{0:hh\\:mm\\:ss}'}"
+                                                   FontSize="16" TextColor="#2D3142" FontAttributes="Bold"/>
+                                        </StackLayout>
+                                    </Frame>
+                                    <Frame Grid.Column="2" Padding="15,10" HasShadow="False" BackgroundColor="#7161EF" CornerRadius="8">
+                                        <Button Text="Add Songs"
+                                                Command="{Binding AddSongToPlaylistCommand}"
+                                                BackgroundColor="Transparent"
+                                                TextColor="#FFFFFF"
+                                                FontAttributes="Bold"/>
+                                    </Frame>
+                                </Grid>
+                            </VerticalStackLayout>
                         </Grid>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-        
-                <!-- Empty View -->
-                <CollectionView.EmptyView>
-                    <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
-                        <Label Text="No songs in this playlist" FontSize="18" TextColor="Gray" HorizontalTextAlignment="Center"/>
-                        <Label Text="Add songs using the button above" TextColor="Gray" HorizontalTextAlignment="Center"/>
-                    </StackLayout>
-                </CollectionView.EmptyView>
-            </CollectionView>
-        </StackLayout>
+
+                        <!-- Action Buttons -->
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="20" Margin="0,5,0,15">
+                            <Button Grid.Column="0"
+                                    Text="Save Playlist"
+                                    Command="{Binding SaveCommand}"
+                                    BackgroundColor="#7161EF"
+                                    TextColor="#FFFFFF"
+                                    FontAttributes="Bold"
+                                    CornerRadius="8"
+                                    HeightRequest="45"/>
+
+                            <Button Grid.Column="1"
+                                    Text="Delete Playlist"
+                                    Command="{Binding DeleteCommand}"
+                                    BackgroundColor="#F87171"
+                                    TextColor="#FFFFFF"
+                                    FontAttributes="Bold"
+                                    CornerRadius="8"
+                                    HeightRequest="45"/>
+                        </Grid>
+
+                        <!-- Search Bar -->
+                        <Frame Padding="15,0"
+                               BackgroundColor="White"
+                               CornerRadius="8"
+                               HasShadow="False"
+                               HeightRequest="50"
+                               BorderColor="#E5E7EB">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Entry Grid.Column="0"
+                                       Placeholder="Search in playlist..."
+                                       Text="{Binding SongSearchText}"
+                                       TextColor="#2D3142"
+                                       BackgroundColor="Transparent"
+                                       VerticalOptions="Center"/>
+                                <Image Grid.Column="1"
+                                       Source="search.png"
+                                       HeightRequest="20"
+                                       WidthRequest="20"
+                                       HorizontalOptions="End"
+                                       VerticalOptions="Center"
+                                       Opacity="0.6"/>
+                            </Grid>
+                        </Frame>
+
+                        <!-- Songs List Header -->
+                        <Grid ColumnDefinitions="4*,2*,2*,2*,1*"
+                              Padding="15,10"
+                              BackgroundColor="#F0F1F5">
+                            <Label Text="Song" Grid.Column="0" FontAttributes="Bold" TextColor="#4F5D75"/>
+                            <Label Text="Artist" Grid.Column="1" FontAttributes="Bold" TextColor="#4F5D75"/>
+                            <Label Text="Genre" Grid.Column="2" FontAttributes="Bold" TextColor="#4F5D75"/>
+                            <Label Text="Duration" Grid.Column="3" FontAttributes="Bold" TextColor="#4F5D75"/>
+                            <Label Text="" Grid.Column="4"/>
+                        </Grid>
+
+                        <!-- Songs List -->
+                        <Frame BackgroundColor="White"
+                               Padding="0"
+                               CornerRadius="8"
+                               HasShadow="False"
+                               BorderColor="#E5E7EB">
+                            <CollectionView ItemsSource="{Binding FilteredSongsInPlaylist}"
+                                            HeightRequest="400"
+                                            Margin="0,0,0,0">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="models:SongDetailModel">
+                                        <Grid Padding="15,12" ColumnDefinitions="4*,2*,2*,2*,1*">
+                                            <!-- Song Name -->
+                                            <Label Grid.Column="0"
+                                                   Text="{Binding Name}"
+                                                   FontAttributes="Bold"
+                                                   VerticalOptions="Center"
+                                                   TextColor="#2D3142"/>
+
+                                            <!-- Artist -->
+                                            <Label Grid.Column="1"
+                                                   Text="{Binding Artist}"
+                                                   VerticalOptions="Center"
+                                                   TextColor="#4F5D75"/>
+
+                                            <!-- Genre -->
+                                            <Label Grid.Column="2"
+                                                   Text="{Binding Genre}"
+                                                   VerticalOptions="Center"
+                                                   TextColor="#4F5D75"/>
+
+                                            <!-- Duration -->
+                                            <Label Grid.Column="3"
+                                                   Text="{Binding DurationInSeconds, StringFormat='{0:mm\\:ss}'}"
+                                                   VerticalOptions="Center"
+                                                   TextColor="#4F5D75"/>
+
+                                            <!-- Remove Button -->
+                                            <Button Grid.Column="4"
+                                                    Text="✕"
+                                                    FontSize="16"
+                                                    BackgroundColor="Transparent"
+                                                    TextColor="#6B7280"
+                                                    CornerRadius="15"
+                                                    HeightRequest="30"
+                                                    WidthRequest="30"
+                                                    Padding="0"
+                                                    HorizontalOptions="End"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:PlaylistDetailViewModel}}, Path=RemoveSongFromPlaylistCommand}"
+                                                    CommandParameter="{Binding .}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+
+                                <!-- Empty View -->
+                                <CollectionView.EmptyView>
+                                    <StackLayout HorizontalOptions="Center"
+                                                 VerticalOptions="Center"
+                                                 Padding="20">
+                                        <Label Text="No songs in this playlist"
+                                               FontSize="18"
+                                               TextColor="#6B7280"
+                                               HorizontalTextAlignment="Center"/>
+                                        <Label Text="Add songs using the button above"
+                                               TextColor="#6B7280"
+                                               HorizontalTextAlignment="Center"/>
+                                    </StackLayout>
+                                </CollectionView.EmptyView>
+                            </CollectionView>
+                        </Frame>
+                    </VerticalStackLayout>
+                </Frame>
+            </VerticalStackLayout>
+        </ScrollView>
     </Grid>
 </ContentPage>

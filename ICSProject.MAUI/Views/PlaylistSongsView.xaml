@@ -2,32 +2,33 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:ICSProject.MAUI.ViewModels"
-             xmlns:models="clr-namespace:ICS_Project.BL.Models;assembly=ICS_Project.BL"
-             xmlns:views="clr-namespace:ICSProject.MAUI.Views"
              x:Class="ICSProject.MAUI.Views.PlaylistSongsView"
              x:DataType="viewmodels:PlaylistDetailViewModel"
              BackgroundColor="White">
 
-    <Grid RowDefinitions="Auto,Auto,*" Padding="20">
-        <Grid Grid.Row="1" ColumnDefinitions="*, Auto, Auto" Margin="0,10">
+    <Grid RowDefinitions="Auto,Auto,*" Padding="10,15">
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto" VerticalOptions="Start" Padding="0,0,0,10">
             <!-- Search Bar -->
             <Frame Grid.Column="0"
                    Padding="10"
-                   BackgroundColor="#F6EFF8"
+                   BackgroundColor="#F7F7F7"
                    CornerRadius="20"
                    HasShadow="False">
-                <Entry Placeholder="Search for a song"
-                       Text="{Binding SongSearchText}"
-                       ClearButtonVisibility="WhileEditing"
-                       Keyboard="Default"
-                       TextColor="Black" />
+                <Grid ColumnDefinitions="*,Auto">
+                    <Entry Text="{Binding SongSearchText}"
+                           Placeholder="Search for a song"
+                           BackgroundColor="Transparent"
+                           FontSize="16"
+                           TextColor="#2D3142"/>
+                </Grid>
             </Frame>
-    
+
             <!-- Reload Playlist Button -->
             <ImageButton Grid.Column="1"
                          Source="refresh.png"
                          Margin="10,0"
-                         WidthRequest="32" HeightRequest="32"
+                         WidthRequest="32" 
+                         HeightRequest="32"
                          Command="{Binding ReloadPlaylistCommand}"/>
 
             <!-- Edit Playlist Button -->
@@ -35,13 +36,13 @@
                     Text="Edit"
                     Command="{Binding NavigateToEditCommand}"
                     CommandParameter="{Binding Playlist.Id}"
-                    BackgroundColor="Black"
-                    TextColor="White"
+                    BackgroundColor="#7161EF"
+                    TextColor="#FFFFFF"
                     CornerRadius="8"
-                    Padding="30,5"
+                    WidthRequest="100"
+                    Padding="10,5"
                     FontSize="14"
-                    Margin="10,0"
-            />
-        </Grid>        
+                    Margin="10,0"/>
+        </Grid>
     </Grid>
 </ContentView>
