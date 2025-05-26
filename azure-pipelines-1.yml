@@ -1,0 +1,29 @@
+trigger:
+  - master
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  buildConfiguration: 'Release'
+  solution: '**/*.sln'
+
+steps:
+  - task: UseDotNet@2
+    inputs:
+      packageType: sdk
+      version: 8.0.x
+
+  - script: dotnet workload restore
+    displayName: 'Restore MAUI workloads'
+
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: restore
+      projects: '$(solution)'
+
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: build
+      projects: '$(solution)'
+      arguments: '--configuration $(buildConfiguration)'
