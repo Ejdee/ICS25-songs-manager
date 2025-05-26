@@ -6,6 +6,7 @@ public record PlaylistDetailModel : ModelBase
 { 
     public required string Name { get; set; }
     public required string Description { get; set; }
+    public string? ImageUrl { get; set; }
     public TimeSpan DurationInSeconds { get; set; }
     public int SongCount { get; set; }
     public ObservableCollection<PlaylistSongListModel> Songs { get; init; } = new();

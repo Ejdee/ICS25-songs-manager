@@ -3,6 +3,7 @@ namespace ICS_Project.BL.Models;
 public record PlaylistListModel : ModelBase
 {
     public required string Name { get; set; }
+    public string? ImageUrl { get; set; } 
     public TimeSpan DurationInSeconds { get; set; }
     public int SongCount { get; set; }
 

@@ -1,0 +1,220 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:ICSProject.MAUI.Views"
+             xmlns:vm="clr-namespace:ICSProject.MAUI.ViewModels"
+             xmlns:enums="using:ICSProject.MAUI.Enums"
+             xmlns:converters="using:ICSProject.MAUI.Converters"
+             x:Class="ICSProject.MAUI.MainPage"
+             BackgroundColor="#FFFFFF"
+             x:DataType="vm:MainViewModel">
+
+    <ContentPage.Resources>
+        <converters:EnumDescriptionConverter x:Key="EnumDescriptionConverter" />
+        <converters:BoolToSortDirectionConverter x:Key="BoolToSortDirectionConverter" />
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,*" ColumnDefinitions="200,*">
+        <!-- Sidebar -->
+        <StackLayout Grid.RowSpan="2" BackgroundColor="#2D3142" Spacing="20" Padding="10">
+            <Label Text="▶ SONG THINGY" FontAttributes="Bold" FontSize="20" TextColor="#FFFFFF"/>
+
+            <!-- Navigation options -->
+            <Button Text="Playlists"
+                    Command="{Binding SetViewCommand}"
+                    CommandParameter="Playlists"
+                    BackgroundColor="#7161EF"
+                    TextColor="#FFFFFF"
+                    FontAttributes="Bold"/>
+
+            <Button Text="Songs"
+                    Command="{Binding SetViewCommand}"
+                    CommandParameter="Songs"
+                    BackgroundColor="#7161EF"
+                    TextColor="#FFFFFF"
+                    FontAttributes="Bold"/>
+
+            <!-- Genre filter -->
+            <StackLayout IsVisible="{Binding ShowGenreFilter}">
+                <Label Text="Genre" FontAttributes="Bold" TextColor="#FFFFFF"/>
+                <Picker ItemsSource="{Binding SongListViewModel.GenreList}"
+                        SelectedItem="{Binding SongListViewModel.SelectedGenre}"
+                        TextColor="#2D3142"
+                        BackgroundColor="#F7F7F7"/>
+            </StackLayout>
+
+            <!-- Sorting options -->
+            <Label Text="Sort" FontAttributes="Bold" IsVisible="{Binding ShowSortOptions}" TextColor="#FFFFFF"/>
+            <Picker ItemsSource="{Binding CurrentSortOptions}"
+                    IsVisible="{Binding ShowSortOptions}"
+                    SelectedItem="{Binding CurrentSelectedSortOption}"
+                    ItemDisplayBinding="{Binding ., Converter={StaticResource EnumDescriptionConverter}}"
+                    TextColor="#2D3142"
+                    BackgroundColor="#F7F7F7"/>
+
+            <!-- Sort direction toggle button -->
+            <Button Text="{Binding IsSortAscending, Converter={StaticResource BoolToSortDirectionConverter}}"
+                    Command="{Binding ToggleSortDirectionCommand}"
+                    IsVisible="{Binding ShowSortOptions}"
+                    BackgroundColor="#4F5D75"
+                    TextColor="#FFFFFF"/>
+        </StackLayout>
+
+        <!-- Title -->
+        <Grid Grid.Column="1" Padding="20" VerticalOptions="Start" ColumnDefinitions="*,Auto">
+            <Label Text="{Binding CurrentTitle}"
+                   FontSize="32"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   TextColor="#2D3142"/>
+        </Grid>
+
+        <!-- Main Content Area -->
+        <ContentView Grid.Row="1" Grid.Column="1" Padding="20">
+            <ContentView.Triggers>
+                <DataTrigger TargetType="ContentView"
+                             Binding="{Binding ContentType}"
+                             Value="Songs">
+                    <Setter Property="Content">
+                        <Setter.Value>
+                            <Grid RowDefinitions="Auto,*">
+                                <!-- Songs -->
+                                <Grid ColumnDefinitions="*,Auto,Auto" VerticalOptions="Start" Padding="0,0,0,10">
+                                    <Frame Grid.Column="0"
+                                           Padding="10"
+                                           BackgroundColor="#F7F7F7"
+                                           CornerRadius="20"
+                                           HasShadow="False">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <Entry Text="{Binding SongListViewModel.SearchText, Mode=TwoWay}"
+                                                   Placeholder="Search for a song"
+                                                   BackgroundColor="Transparent"
+                                                   FontSize="16"
+                                                   TextColor="#2D3142"/>
+                                        </Grid>
+                                    </Frame>
+
+                                    <ImageButton Grid.Column="1"
+                                                 Source="refresh.png"
+                                                 Margin="10,0"
+                                                 WidthRequest="32" HeightRequest="32"
+                                                 Command="{Binding SongListViewModel.LoadSongsCommand}"/>
+
+                                    <Button Grid.Column="2"
+                                            Text="Add song"
+                                            BackgroundColor="#7161EF"
+                                            TextColor="#FFFFFF"
+                                            CornerRadius="8"
+                                            Padding="10,5"
+                                            FontSize="14"
+                                            Margin="10,0"
+                                            Command="{Binding SongListViewModel.AddSongPopupCommand}"/>
+                                </Grid>
+
+                                <CollectionView Grid.Row="1"
+                                                ItemsSource="{Binding SongListViewModel.Songs}">
+                                    <CollectionView.ItemsLayout>
+                                        <GridItemsLayout Orientation="Vertical"
+                                                         Span="4"
+                                                         HorizontalItemSpacing="10"
+                                                         VerticalItemSpacing="10"/>
+                                    </CollectionView.ItemsLayout>
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <views:SongListView />
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+                            </Grid>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+                <DataTrigger TargetType="ContentView"
+                             Binding="{Binding ContentType}"
+                             Value="Playlists">
+                    <Setter Property="Content">
+                        <Setter.Value>
+                            <Grid RowDefinitions="Auto,*">
+                                <!-- Playlists -->
+                                <Grid ColumnDefinitions="*,Auto,Auto" VerticalOptions="Start" Padding="0,0,0,10">
+                                    <Frame Grid.Column="0"
+                                           Padding="10"
+                                           BackgroundColor="#F7F7F7"
+                                           CornerRadius="20"
+                                           HasShadow="False">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <Entry Text="{Binding PlaylistListViewModel.SearchText, Mode=TwoWay}"
+                                                   Placeholder="Search for a playlist"
+                                                   BackgroundColor="Transparent"
+                                                   FontSize="16"
+                                                   TextColor="#2D3142"/>
+                                        </Grid>
+                                    </Frame>
+
+                                    <ImageButton Grid.Column="1"
+                                                 Source="refresh.png"
+                                                 Margin="10,0"
+                                                 WidthRequest="32" HeightRequest="32"
+                                                 Command="{Binding PlaylistListViewModel.LoadPlaylistsCommand}"/>
+
+                                    <Button Grid.Column="2"
+                                            Text="Add playlist"
+                                            BackgroundColor="#7161EF"
+                                            TextColor="#FFFFFF"
+                                            CornerRadius="8"
+                                            Padding="10,5"
+                                            FontSize="14"
+                                            Margin="10,0"
+                                            Command="{Binding PlaylistListViewModel.AddPlaylistPopupCommand}"/>
+                                </Grid>
+                                
+                                <CollectionView Grid.Row="1"
+                                               ItemsSource="{Binding PlaylistListViewModel.Playlists}">
+                                    <CollectionView.ItemsLayout>
+                                        <GridItemsLayout Orientation="Vertical"
+                                                         Span="4"
+                                                         HorizontalItemSpacing="10"
+                                                         VerticalItemSpacing="10"/>
+                                    </CollectionView.ItemsLayout>
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <views:PlaylistListView />
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+                            </Grid>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+                <DataTrigger TargetType="ContentView"
+                             Binding="{Binding ContentType}"
+                             Value="PlaylistSongs">
+                    <Setter Property="Content">
+                        <Setter.Value>
+                            <Grid RowDefinitions="Auto,*">
+                                <views:PlaylistSongsView Grid.Row="0"
+                                                         BindingContext="{Binding PlaylistDetailViewModel}" />
+
+                                <CollectionView Grid.Row="1"
+                                                ItemsSource="{Binding PlaylistDetailViewModel.FilteredSongsInPlaylist}"
+                                                Margin="0,10,0,0">
+                                    <CollectionView.ItemsLayout>
+                                        <GridItemsLayout Orientation="Vertical"
+                                                         Span="4"
+                                                         HorizontalItemSpacing="10"
+                                                         VerticalItemSpacing="10"/>
+                                    </CollectionView.ItemsLayout>
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <views:SongListView ShowEditButton="False" />
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+                            </Grid>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+            </ContentView.Triggers>
+        </ContentView>
+    </Grid>
+</ContentPage>

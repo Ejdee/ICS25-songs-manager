@@ -20,7 +20,7 @@ public class SongFacade(IUnitOfWorkFactory unitOfWorkFactory, SongModelMapper mo
         await using IUnitOfWork uow = UnitOfWorkFactory.Create();
         IRepository<SongEntity> repository = uow.GetRepository<SongEntity, SongEntityMapper>();
 
-        var query = repository.GetAll().Where(s => s.Name.Contains(name));
+        var query = repository.GetAll().Where(s => s.Name.ToLower().Contains(name.ToLower()));
 
         var entities = await query.ToListAsync();
         return entities.Select(e => ModelMapper.MapToListModel(e));
@@ -39,7 +39,7 @@ public class SongFacade(IUnitOfWorkFactory unitOfWorkFactory, SongModelMapper mo
     }
     
     // Returns a sorted list of songs based on the provided sort option
-    public async Task<IEnumerable<SongListModel>> GetSortedAsync(SongSortOption sortOption, bool ascending = true)
+    public async Task<IEnumerable<SongListModel>> GetSortedAsync(SortOptions sortOption, bool ascending = true)
     {
         await using IUnitOfWork uow = UnitOfWorkFactory.Create();
         IRepository<SongEntity> repository = uow.GetRepository<SongEntity, SongEntityMapper>();
@@ -49,13 +49,13 @@ public class SongFacade(IUnitOfWorkFactory unitOfWorkFactory, SongModelMapper mo
         // Apply sorting
         switch (sortOption)
         {
-            case SongSortOption.Name:
+            case SortOptions.SongName:
                 query = ascending
                     ? query.OrderBy(s => s.Name)
                     : query.OrderByDescending(s => s.Name);
                 break;
 
-            case SongSortOption.Duration:
+            case SortOptions.SongDuration:
                 query = ascending
                     ? query.OrderBy(s => s.DurationInSeconds)
                     : query.OrderByDescending(s => s.DurationInSeconds);
@@ -67,5 +67,38 @@ public class SongFacade(IUnitOfWorkFactory unitOfWorkFactory, SongModelMapper mo
 
         var entities = await query.ToListAsync();
         return entities.Select(e => ModelMapper.MapToListModel(e));
+    }
+    public async Task<IEnumerable<SongListModel>> GetAllAsync()
+    {
+        await using IUnitOfWork uow = UnitOfWorkFactory.Create();
+        IRepository<SongEntity> repository = uow.GetRepository<SongEntity, SongEntityMapper>();
+
+        var entities = await repository.GetAll().ToListAsync();
+        return entities.Select(e => ModelMapper.MapToListModel(e));
+    }
+    public override async Task<SongDetailModel> SaveAsync(SongDetailModel model)
+    {
+        return await base.SaveAsync(model);
+    }
+    
+    public new async Task DeleteAsync(Guid id)
+    {
+        await using IUnitOfWork uow = UnitOfWorkFactory.Create();
+        var playlistSongRepo = uow.GetRepository<PlaylistSongEntity, PlaylistSongEntityMapper>();
+        
+        var links = await playlistSongRepo
+            .GetAll()
+            .Where(ps => ps.SongId == id)
+            .ToListAsync();
+
+        foreach (var link in links)
+        {
+            await playlistSongRepo.DeleteAsync(link.Id);
+        }
+
+        var songRepo = uow.GetRepository<SongEntity, SongEntityMapper>();
+        await songRepo.DeleteAsync(id);
+
+        await uow.CommitAsync();
     }
 }

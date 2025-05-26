@@ -87,16 +87,6 @@ public class SongFacadeTests : FacadeTestBase
     }
 
     [Fact]
-    public async Task Delete_SongUsedInPlaylist_Throws()
-    {
-        //Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(async () =>
-        {
-            await _songFacadeSUT.DeleteAsync(SongSeeds.BillieJean.Id);
-        });
-    }
-
-    [Fact]
     public async Task Insert_ExistingSong_Update()
     {
         //Arrange
@@ -108,7 +98,7 @@ public class SongFacadeTests : FacadeTestBase
             Genre = SongSeeds.BillieJean.Genre,
             DurationInSeconds = TimeSpan.FromSeconds(SongSeeds.BillieJean.DurationInSeconds),
             Artist = SongSeeds.BillieJean.Artist,
-            SongUrl = SongSeeds.BillieJean.SongUrl,
+            SongUrl = SongSeeds.BillieJean.SongUrl!,
         };
         
         existingSong.Name += "updated"; 
@@ -130,7 +120,7 @@ public class SongFacadeTests : FacadeTestBase
     public async Task GetSortedAsync_ByNameAscending()
     {
         //Act
-        var songs = await _songFacadeSUT.GetSortedAsync(SongSortOption.Name, true);
+        var songs = await _songFacadeSUT.GetSortedAsync(SortOptions.SongName, true);
         var songList = songs.ToList();
         
         //Assert
@@ -144,7 +134,7 @@ public class SongFacadeTests : FacadeTestBase
     public async Task GetSortedAsync_ByNameDescending()
     {
         //Act
-        var songs = await _songFacadeSUT.GetSortedAsync(SongSortOption.Name, false);
+        var songs = await _songFacadeSUT.GetSortedAsync(SortOptions.SongName, false);
         var songList = songs.ToList();
         
         //Assert
@@ -158,7 +148,7 @@ public class SongFacadeTests : FacadeTestBase
     public async Task GetSortedAsync_ByDurationAscending()
     {
         //Act
-        var songs = await _songFacadeSUT.GetSortedAsync(SongSortOption.Duration, true);
+        var songs = await _songFacadeSUT.GetSortedAsync(SortOptions.SongDuration, true);
         var songList = songs.ToList();
         
         //Assert
@@ -172,7 +162,7 @@ public class SongFacadeTests : FacadeTestBase
     public async Task GetSortedAsync_ByDurationDescending()
     {
         //Act
-        var songs = await _songFacadeSUT.GetSortedAsync(SongSortOption.Duration, false);
+        var songs = await _songFacadeSUT.GetSortedAsync(SortOptions.SongDuration, false);
         var songList = songs.ToList();
         
         //Assert

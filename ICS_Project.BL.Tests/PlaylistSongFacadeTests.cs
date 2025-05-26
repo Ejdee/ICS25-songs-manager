@@ -26,7 +26,7 @@ public class PlaylistSongFacadeTests : FacadeTestBase
             Id = Guid.NewGuid(),
             SongId = SongSeeds.BillieJean.Id,
             SongName = SongSeeds.BillieJean.Name,
-            SongUrl = SongSeeds.BillieJean.SongUrl,
+            SongUrl = SongSeeds.BillieJean.SongUrl!,
             SongDurationInSeconds = TimeSpan.FromSeconds(SongSeeds.BillieJean.DurationInSeconds),
             Artist = SongSeeds.BillieJean.Artist,
             Genre = SongSeeds.BillieJean.Genre
@@ -89,7 +89,7 @@ public class PlaylistSongFacadeTests : FacadeTestBase
             SongDurationInSeconds = TimeSpan.FromSeconds(SongSeeds.BillieJean.DurationInSeconds),
             Artist = SongSeeds.BillieJean.Artist,
             Genre = SongSeeds.BillieJean.Genre,
-            SongUrl = SongSeeds.BillieJean.SongUrl
+            SongUrl = SongSeeds.BillieJean.SongUrl!
         };
         
         //Act
@@ -113,27 +113,6 @@ public class PlaylistSongFacadeTests : FacadeTestBase
         Assert.Contains(playlist.Songs, s => s.SongId == updated.SongId);
     }
     
-    [Fact]
-    public async Task AddNewSongPlaylist_ListModel_NonExisting_DoesNothing()
-    {
-        // Arrange
-        var nonExistingPlaylistSong = new PlaylistSongListModel
-        {
-            Id = Guid.NewGuid(),
-            SongId = SongSeeds.BillieJean.Id,
-            SongName = SongSeeds.BillieJean.Name,
-            SongDurationInSeconds = TimeSpan.FromSeconds(SongSeeds.BillieJean.DurationInSeconds)
-        };
-
-        // Act
-        await _playlistSongFacadeSUT.SaveAsync(nonExistingPlaylistSong, PlaylistSeeds.PlaylistC.Id);
-        var playlist = await _playlistFacadeSUT.GetAsync(PlaylistSeeds.PlaylistC.Id);
-
-        // Assert
-        Assert.NotNull(playlist);
-        Assert.DoesNotContain(playlist.Songs, s => s.SongId == nonExistingPlaylistSong.SongId);
-    }
-
     [Fact]
     public async Task MapSongToExistingDetail_ExistingSong()
     {

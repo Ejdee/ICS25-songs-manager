@@ -18,42 +18,46 @@ public class PlaylistFacade(IUnitOfWorkFactory unitOfWorkFactory, PlaylistModelM
     protected override ICollection<string> IncludesNavigationPathDetail => 
         new [] {$"{nameof(PlaylistEntity.PlaylistSongs)}.{nameof(PlaylistSongEntity.Song)}"};
     
-    // Returns a list of playlists that contain the provided name
     public async Task<IEnumerable<PlaylistListModel>> SearchByNameAsync(string name)
     {
         await using IUnitOfWork uow = UnitOfWorkFactory.Create();
         IRepository<PlaylistEntity> repository = uow.GetRepository<PlaylistEntity, PlaylistEntityMapper>();
+        // added include to getting correct data
         var query = repository 
             .GetAll()
+            .Include(p => p.PlaylistSongs)
+            .ThenInclude(ps => ps.Song)
             .Where(p => p.Name.Contains(name));
         var entities = await query.ToListAsync();
         return entities.Select(e => ModelMapper.MapToListModel(e));
     }
 
-    // Returns a sorted list of playlists based on the provided sort option
-    public async Task<IEnumerable<PlaylistListModel>> GetSortedAsync(PlaylistSortOption sortOption, bool ascending = true)
+    public async Task<IEnumerable<PlaylistListModel>> GetSortedAsync(SortOptions sortOption, bool ascending = true)
     {
         await using IUnitOfWork uow = UnitOfWorkFactory.Create();
         IRepository<PlaylistEntity> repository = uow.GetRepository<PlaylistEntity, PlaylistEntityMapper>();
 
-        IQueryable<PlaylistEntity> query = repository.GetAll();
+        // added include to getting correct data
+        IQueryable<PlaylistEntity> query = repository.GetAll()
+            .Include(p => p.PlaylistSongs)
+            .ThenInclude(ps => ps.Song);
 
         // Apply sorting 
         switch (sortOption)
         {
-            case PlaylistSortOption.Name:
+            case SortOptions.PlaylistName:
                 query = ascending
                     ? query.OrderBy(p => p.Name)
                     : query.OrderByDescending(p => p.Name);
                 break;
 
-            case PlaylistSortOption.SongCount:
+            case SortOptions.PlaylistSongCount:
                 query = ascending
                     ? query.OrderBy(p => p.PlaylistSongs.Count)
                     : query.OrderByDescending(p => p.PlaylistSongs.Count);
                 break;
 
-            case PlaylistSortOption.Duration:
+            case SortOptions.PlaylistDuration:
                 query = ascending
                     ? query.OrderBy(p => p.PlaylistSongs.Sum(ps => ps.Song.DurationInSeconds))
                     : query.OrderByDescending(p => p.PlaylistSongs.Sum(ps => ps.Song.DurationInSeconds));

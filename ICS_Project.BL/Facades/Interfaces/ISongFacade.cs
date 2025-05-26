@@ -9,5 +9,5 @@ public interface ISongFacade : IFacade<SongEntity, SongListModel, SongDetailMode
     public Task<IEnumerable<SongListModel>> SearchByNameAsync(string name);
     public Task<IEnumerable<SongListModel>> FilterByGenreAsync(string genre);
     
-    public Task<IEnumerable<SongListModel>> GetSortedAsync(SongSortOption sortOption, bool ascending = true);
+    public Task<IEnumerable<SongListModel>> GetSortedAsync(SortOptions sortOption, bool ascending = true);
 }

@@ -1,0 +1,64 @@
+﻿<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:ICS_Project.BL.Models;assembly=ICS_Project.BL"
+             xmlns:views="using:ICSProject.MAUI.Views"
+             xmlns:converters="using:ICSProject.MAUI.Converters"
+             x:Class="ICSProject.MAUI.Views.SongListView"
+             x:DataType="models:SongDetailModel">
+    
+    <ContentView.Resources>
+        <converters:InvertBoolConverter x:Key="InvertBoolConverter"/>
+    </ContentView.Resources>
+
+    <Frame CornerRadius="16" HasShadow="True" Padding="0" Margin="4" BackgroundColor="White">
+        <Frame.GestureRecognizers>
+            <TapGestureRecognizer Tapped="OnTapSongListViewTapped"/>
+        </Frame.GestureRecognizers>
+        <Grid RowDefinitions="Auto,Auto,*" ColumnDefinitions="*,Auto" Padding="10">
+            
+            <Label Text="{Binding Name}"
+                   FontAttributes="Bold"
+                   FontSize="16"
+                   Grid.Row="1"
+                   Grid.Column="0"
+                   TextColor="Black"
+                   LineBreakMode="TailTruncation" />
+
+            <StackLayout Orientation="Horizontal"
+                         Grid.Row="2"
+                         Grid.Column="0"
+                         HorizontalOptions="Start"
+                         Spacing="10">
+                <Label Text="{Binding Genre}"
+                       FontSize="13"
+                       TextColor="Gray" />
+                <Label Text="{Binding DurationInSeconds}"
+                       FontSize="13"
+                       TextColor="Gray" />
+            </StackLayout>
+
+            <ImageButton Grid.Row="1"
+                    Grid.Column="1"
+                    IsVisible="{Binding Source={RelativeSource AncestorType={x:Type views:SongListView}}, Path=ShowEditButton}"
+                    VerticalOptions="Center"
+                    HorizontalOptions="End"
+                    Clicked="OnEditButtonClicked"
+                    BackgroundColor="Transparent"
+                    Padding="5"
+                    Source="edit_icon.png"
+                    HeightRequest="24"
+                    WidthRequest="24" />
+            
+            <Image Grid.Row="1"
+                   Grid.Column="1"
+                   IsVisible="{Binding Source={RelativeSource AncestorType={x:Type views:SongListView}}, Path=ShowEditButton, Converter={StaticResource InvertBoolConverter}}"
+                   VerticalOptions="Center"
+                   HorizontalOptions="End"
+                   BackgroundColor="Transparent"
+                   Margin="5"
+                   Source="music_icon.png"
+                   HeightRequest="24"
+                   WidthRequest="24" />
+        </Grid>
+    </Frame>
+</ContentView>

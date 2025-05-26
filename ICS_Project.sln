@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICS_Project.BL", "ICS_Proje
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICS_Project.BL.Tests", "ICS_Project.BL.Tests\ICS_Project.BL.Tests.csproj", "{12DEA26F-4177-40F0-BE49-DCCE306C109E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSProject.MAUI", "ICSProject.MAUI\ICSProject.MAUI.csproj", "{716ABAD2-43A0-4A79-B174-CBB8CB8D2489}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{12DEA26F-4177-40F0-BE49-DCCE306C109E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12DEA26F-4177-40F0-BE49-DCCE306C109E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12DEA26F-4177-40F0-BE49-DCCE306C109E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{716ABAD2-43A0-4A79-B174-CBB8CB8D2489}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{716ABAD2-43A0-4A79-B174-CBB8CB8D2489}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{716ABAD2-43A0-4A79-B174-CBB8CB8D2489}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{716ABAD2-43A0-4A79-B174-CBB8CB8D2489}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

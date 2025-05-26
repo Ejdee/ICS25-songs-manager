@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:ICSProject.MAUI.ViewModels"
+             x:Class="ICSProject.MAUI.Views.SearchSongsPage"
+             x:DataType="viewmodels:SearchSongsViewModel"
+             Title="Search"
+             BackgroundColor="#FFFFFF">
+
+    <Grid RowDefinitions="Auto,*" Padding="20">
+        <!-- Header -->
+        <Label Grid.Row="0" 
+               Text="Search Songs" 
+               FontSize="32" 
+               FontAttributes="Bold" 
+               HorizontalOptions="Center"
+               Margin="0,10,0,20"
+               TextColor="#2D3142"/>
+        
+        <!-- Content Container -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout HorizontalOptions="Center" WidthRequest="600" MaximumWidthRequest="600">
+                <Frame BackgroundColor="#F7F7F7"
+                       Padding="25"
+                       CornerRadius="15"
+                       HasShadow="True"
+                       BorderColor="Transparent">
+                    
+                    <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="15">
+                        <!-- Search Box -->
+                        <Frame Grid.Row="0" 
+                               BackgroundColor="White" 
+                               CornerRadius="8" 
+                               Padding="15,0" 
+                               HasShadow="False"
+                               HeightRequest="50">
+                            <Entry Text="{Binding SearchText}" 
+                                   Placeholder="Type to search songs..."
+                                   BackgroundColor="Transparent"
+                                   FontSize="16"
+                                   TextColor="#2D3142"
+                                   VerticalOptions="Center"/>
+                        </Frame>
+                        
+                        <!-- Selection Info + Add Button -->
+                        <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0"
+                                   Text="{Binding SelectionMessage}"
+                                   FontSize="14"
+                                   TextColor="#6B7280"
+                                   VerticalOptions="Center"/>
+                        </Grid>
+                        
+                        <!-- Live Results -->
+                        <CollectionView Grid.Row="2" 
+                                        ItemsSource="{Binding FilteredSongs}"
+                                        BackgroundColor="Transparent"
+                                        Margin="0,10">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="viewmodels:SelectableSongModel">
+                                    <Frame Margin="0,5" 
+                                           Padding="0"
+                                           HasShadow="False" 
+                                           BorderColor="Transparent"
+                                           CornerRadius="8"
+                                           BackgroundColor="White">
+                                        <Frame.Triggers>
+                                            <DataTrigger TargetType="Frame" Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="BorderColor" Value="#7161EF" />
+                                                <Setter Property="BackgroundColor" Value="#F0EDFF" />
+                                            </DataTrigger>
+                                        </Frame.Triggers>
+                                        
+                                        <Grid ColumnDefinitions="Auto,*" Padding="15,12">
+                                            <Grid.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:SearchSongsViewModel}}, Path=AddSongCommand}"
+                                                                      CommandParameter="{Binding .}"/>
+                                            </Grid.GestureRecognizers>
+                                            
+                                            <!-- Selection Indicator -->
+                                            <Label Grid.Column="0"
+                                                   Text="✓"
+                                                   FontSize="20"
+                                                   TextColor="#7161EF"
+                                                   VerticalOptions="Center"
+                                                   Margin="0,0,15,0"
+                                                   IsVisible="{Binding IsSelected}"/>
+                                            
+                                            <StackLayout Grid.Column="1" Spacing="3">
+                                                <Label Text="{Binding Song.Name}" 
+                                                       FontAttributes="Bold" 
+                                                       FontSize="16"
+                                                       TextColor="#2D3142"/>
+                                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                                    <Label Grid.Column="0"
+                                                           Text="{Binding Song.Genre}" 
+                                                           FontSize="12" 
+                                                           TextColor="#6B7280"/>
+                                                    <Label Grid.Column="1"
+                                                           Text="{Binding Song.DurationInSeconds, StringFormat='{0} sec'}" 
+                                                           FontSize="12" 
+                                                           HorizontalOptions="End"
+                                                           TextColor="#6B7280"/>
+                                                </Grid>
+                                            </StackLayout>
+                                        </Grid>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                            
+                            <CollectionView.EmptyView>
+                                <StackLayout HorizontalOptions="Center" 
+                                             VerticalOptions="Center"
+                                             Margin="40">
+                                    <Label Text="{Binding EmptyMessage}" 
+                                           FontSize="16" 
+                                           TextColor="#6B7280" 
+                                           HorizontalTextAlignment="Center"/>
+                                </StackLayout>
+                            </CollectionView.EmptyView>
+                        </CollectionView>
+                        
+                        <!-- Buttons -->
+                        <Grid Grid.Row="3" ColumnDefinitions="*,*" ColumnSpacing="15" Margin="0,10,0,0">
+                            <Button Grid.Column="0"
+                                    Text="Add Selected"
+                                    BackgroundColor="#7161EF"
+                                    TextColor="#FFFFFF"
+                                    FontAttributes="Bold"
+                                    CornerRadius="8"
+                                    HeightRequest="50"
+                                    Command="{Binding AddSelectedSongsCommand}"/>
+                            
+                            <Button Grid.Column="1"
+                                    Text="Close" 
+                                    BackgroundColor="#4F5D75"
+                                    TextColor="#FFFFFF"
+                                    FontAttributes="Bold"
+                                    CornerRadius="8"
+                                    HeightRequest="50"
+                                    Command="{Binding CloseCommand}"/>
+                        </Grid>
+                    </Grid>
+                </Frame>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

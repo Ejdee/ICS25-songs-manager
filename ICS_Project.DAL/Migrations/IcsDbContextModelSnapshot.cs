@@ -27,6 +27,9 @@ namespace ICS_Project.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -83,7 +86,6 @@ namespace ICS_Project.DAL.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("SongUrl")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
