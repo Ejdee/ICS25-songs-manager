@@ -28,7 +28,7 @@ public class PlaylistSongModelMapper
                 SongDurationInSeconds = TimeSpan.FromSeconds(entity.Song.DurationInSeconds),
                 Artist = entity.Song.Artist,
                 Genre = entity.Song.Genre,
-                SongUrl = entity.Song.SongUrl
+                SongUrl = entity.Song.SongUrl ?? string.Empty,
             };
 
     public PlaylistSongListModel MapToListModel(PlaylistSongDetailModel detailModel)

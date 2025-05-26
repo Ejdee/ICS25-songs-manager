@@ -76,7 +76,7 @@ public class SongFacade(IUnitOfWorkFactory unitOfWorkFactory, SongModelMapper mo
         var entities = await repository.GetAll().ToListAsync();
         return entities.Select(e => ModelMapper.MapToListModel(e));
     }
-    public async Task<SongDetailModel> SaveAsync(SongDetailModel model)
+    public override async Task<SongDetailModel> SaveAsync(SongDetailModel model)
     {
         return await base.SaveAsync(model);
     }

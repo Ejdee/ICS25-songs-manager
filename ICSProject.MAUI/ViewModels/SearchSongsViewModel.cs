@@ -87,9 +87,9 @@ public partial class SearchSongsViewModel : ObservableObject
             if (!string.IsNullOrWhiteSpace(SearchText))
             {
                 var searchLower = SearchText.ToLowerInvariant();
-                filtered = filtered.Where(s => 
+                filtered = filtered.Where(s =>
                     s.Name.ToLowerInvariant().Contains(searchLower) ||
-                    s.Genre.ToLowerInvariant().Contains(searchLower));
+                    s.Genre?.ToLowerInvariant().Contains(searchLower) == true);
             }
             
             FilteredSongs.Clear();
