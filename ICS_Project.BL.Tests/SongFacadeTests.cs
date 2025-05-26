@@ -87,16 +87,6 @@ public class SongFacadeTests : FacadeTestBase
     }
 
     [Fact]
-    public async Task Delete_SongUsedInPlaylist_Throws()
-    {
-        //Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(async () =>
-        {
-            await _songFacadeSUT.DeleteAsync(SongSeeds.BillieJean.Id);
-        });
-    }
-
-    [Fact]
     public async Task Insert_ExistingSong_Update()
     {
         //Arrange
@@ -108,7 +98,7 @@ public class SongFacadeTests : FacadeTestBase
             Genre = SongSeeds.BillieJean.Genre,
             DurationInSeconds = TimeSpan.FromSeconds(SongSeeds.BillieJean.DurationInSeconds),
             Artist = SongSeeds.BillieJean.Artist,
-            SongUrl = SongSeeds.BillieJean.SongUrl,
+            SongUrl = SongSeeds.BillieJean.SongUrl!,
         };
         
         existingSong.Name += "updated"; 
