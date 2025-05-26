@@ -25,6 +25,7 @@ public partial class PlaylistDetailViewModel : ObservableObject
     public event EventHandler? SaveCompleted;
     public event EventHandler? PlaylistChanged;
     public event EventHandler<PlaylistDetailModel>? EditPlaylistRequested;
+    public event EventHandler? PlaylistDeleted;
     
     public PlaylistDetailViewModel(
         PlaylistFacade playlistFacade, 
@@ -120,6 +121,7 @@ public partial class PlaylistDetailViewModel : ObservableObject
                     await _playlistFacade.DeleteAsync(Playlist.Id);
                     PlaylistChanged?.Invoke(this, EventArgs.Empty);
                     SaveCompleted?.Invoke(this, EventArgs.Empty);
+                    PlaylistDeleted?.Invoke(this, EventArgs.Empty);
                 }
                 catch (Exception ex)
                 {
