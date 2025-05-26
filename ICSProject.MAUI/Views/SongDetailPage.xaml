@@ -62,10 +62,10 @@
 
                         <!-- URL -->
                         <VerticalStackLayout Spacing="5">
-                            <Label Text="Image URL" FontSize="14" TextColor="#6B7280"/>
+                            <Label Text="Song URL" FontSize="14" TextColor="#6B7280"/>
                             <Frame Padding="15,0" HasShadow="False" BackgroundColor="White" CornerRadius="8" HeightRequest="50">
                                 <Entry Text="{Binding Song.SongUrl}"
-                                      Placeholder="Image URL"
+                                      Placeholder="Song URL"
                                       TextColor="#2D3142"
                                       BackgroundColor="Transparent"
                                       VerticalOptions="Center"/>
