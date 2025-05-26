@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ABI.Windows.Media.Playlists;
-using ICS_Project.BL.Models;
+﻿using ICS_Project.BL.Models;
 using ICSProject.MAUI.ViewModels;
 
 namespace ICSProject.MAUI.Views;
 
-public partial class PlaylistSongsView : ContentView
+public partial class PlaylistSongsView
 {
     public PlaylistSongsView()
     {
@@ -38,15 +32,15 @@ public partial class PlaylistSongsView : ContentView
             {
                 await editViewModel.Load(playlist);
                 
-                editViewModel.PlaylistChanged += async (_, __) => await playlistListViewModel.LoadPlaylistsAsync();
+                editViewModel.PlaylistChanged += async (_, _) => await playlistListViewModel.LoadPlaylistsAsync();
                 
-                editViewModel.SaveCompleted += async (_, __) =>
+                editViewModel.SaveCompleted += async (_, _) =>
                 {
                     await Navigation.PopAsync();
                     await detailViewModel.ReloadPlaylistCommand.ExecuteAsync(playlist);
                 };
                 
-                editViewModel.PlaylistDeleted += async (_, __) => 
+                editViewModel.PlaylistDeleted += async (_, _) => 
                 {
                     await playlistListViewModel.LoadPlaylistsAsync();
                     await Navigation.PopAsync();
