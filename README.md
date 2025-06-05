@@ -30,3 +30,20 @@ This application enables users to manage their personal music library by creatin
 - **Architecture:** MVVM + Layered  
 - **Database:** SQLite
 - **DevOps:** Azure DevOps (Repos + Pipelines)
+
+## Screenshots
+
+### Songs View
+![Songs View](docs/images/song_view.png)
+
+### Song Details
+![Song Details](docs/images/song_details.png)
+
+### Playlist View
+![Playlist View](docs/images/playlist_view.png)
+
+### Playlist Details
+![Playlist Details](docs/images/playlist_details.png)
+
+### Add Songs to a Playlist
+![Adding Songs](docs/images/add_songs.png)
